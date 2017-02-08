@@ -4,4 +4,6 @@ _site/
 .idea
 *.swp
 .Trashes
-_post/
+_posts/
+.gitignore
+artcle
