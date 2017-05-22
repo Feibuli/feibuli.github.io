@@ -1,4 +1,4 @@
-# Basic
+﻿# Basic
 title: Hliang
 subtitle: 个人站
 description: 我说晚了你就不学了吗？
@@ -65,6 +65,5 @@ nav:
 # Pagination
 gems: [jekyll-paginate]
 paginate: 10
-paginate_path: "page/:num/"
-
-
+paginate_path: "page/:num/" 
+    
