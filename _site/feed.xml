@@ -1,0 +1,1546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hliang</title>
+    <description>我说晚了你就不学了吗？</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 23 May 2017 00:35:23 +0800</pubDate>
+    <lastBuildDate>Tue, 23 May 2017 00:35:23 +0800</lastBuildDate>
+    <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>非覆盖式开发--前段工程化</title>
+        <description>&lt;ul&gt;
+  &lt;li&gt;作者：张云龙        &lt;a href=&quot;https://www.zhihu.com/question/20790576/answer/32602154&quot;&gt;链接&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+
+&lt;p&gt;前百度工程师，曾负责百度 &lt;a href=&quot;[http://fis.baidu.com/]&quot;&gt;前端集成解决方案&lt;/a&gt; 的核心设计与开发工作。我现在称这个领域为【前端工程】。没错，这是我最爱唠叨的问题域。&lt;/p&gt;
+
+&lt;p&gt;这是一个非常有趣的 &lt;strong&gt;非主流前端领域&lt;/strong&gt;，这个领域要探索的是如何用工程手段解决前端开发和部署优化的综合问题，入行到现在一直在学习和实践中。&lt;/p&gt;
+
+&lt;p&gt;在我的印象中，facebook是这个领域的鼻祖，有兴趣、有梯子的同学可以去看看facebook的页面源代码，体会一下什么叫工程化。&lt;/p&gt;
+
+&lt;p&gt;接下来，我想从原理展开讲述，多图，较长，希望能有耐心看完。&lt;/p&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;让我们返璞归真，从原始的前端开发讲起。上图是一个“可爱”的index.html页面和它的样式文件a.css，用文本编辑器写代码，无需编译，本地预览，确认OK，丢到服务器，等待用户访问。前端就是这么简单，好好玩啊，门槛好低啊，分分钟学会有木有！&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/2.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们访问页面，看到效果，再查看一下网络请求，200！不错，太™完美了！那么，研发完成。。。。了么？&lt;/p&gt;
+
+&lt;p&gt;等等，这还没完呢！对于大公司来说，那些变态的访问量和性能指标，将会让前端一点也不“好玩”。&lt;/p&gt;
+
+&lt;p&gt;看看那个a.css的请求吧，如果每次用户访问页面都要加载，是不是很影响性能，很浪费带宽啊，我们希望最好这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/3.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;利用304，让浏览器使用本地缓存。但，这样也就够了吗？不成！304叫协商缓存，这玩意还是要和服务器通信一次，我们的优化级别是变态级，所以必须彻底灭掉这个请求，变成这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/4.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;强制浏览器使用本地缓存（cache-control/expires），不要和服务器通信。好了，请求方面的优化已经达到变态级别，那问题来了：你都不让浏览器发资源请求了，这缓存咋更新？&lt;/p&gt;
+
+&lt;p&gt;很好，相信有人想到了办法：&lt;strong&gt;通过更新页面中引用的资源路径，让浏览器主动放弃缓存，加载新资源&lt;/strong&gt; 。好像这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/5.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;下次上线，把链接地址改成新的版本，就更新资源了不是。OK，问题解决了么？！当然没有！大公司的变态又来了，思考这种情况：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/6.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;页面引用了3个css，而某次上线只改了其中的a.css，如果所有链接都更新版本，就会导致b.css，c.css的缓存也失效，那岂不是又有浪费了？！&lt;/p&gt;
+
+&lt;p&gt;重新开启变态模式，我们不难发现，要解决这种问题，必须让url的修改与文件内容关联，也就是说，只有文件内容变化，才会导致相应url的变更，从而实现文件级别的精确缓存控制。&lt;/p&gt;
+
+&lt;p&gt;什么东西与文件内容相关呢？我们会很自然的联想到利用 &lt;a href=&quot;http://baike.baidu.com/view/10961371.htm&quot;&gt;数据摘要要算法&lt;/a&gt; 对文件求摘要信息，摘要信息与文件内容一一对应，就有了一种可以精确到单个文件粒度的缓存控制依据了。好了，我们把url改成带摘要信息的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/7.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这回再有文件修改，就只更新那个文件对应的url了，想到这里貌似很完美了。你觉得这就够了么？大公司告诉你：图样图森破！&lt;/p&gt;
+
+&lt;p&gt;唉~~~~，让我喘口气&lt;/p&gt;
+
+&lt;p&gt;现代互联网企业，为了进一步提升网站性能，会把静态资源和动态网页分集群部署，静态资源会被部署到CDN节点上，网页中引用的资源也会变成对应的部署路径：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/8.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;好了，当我要更新静态资源的时候，同时也会更新html中的引用吧，就好像这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/9.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这次发布，同时改了页面结构和样式，也更新了静态资源对应的url地址，现在要发布代码上线，亲爱的前端研发同学，你来告诉我，咱们是先上线页面，还是先上线静态资源？&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;先部署页面，再部署资源&lt;/strong&gt;：在二者部署的时间间隔内，如果有用户访问页面，就会在新的页面结构中加载旧的资源，并且把这个旧版本的资源当做新版本缓存起来，其结果就是：用户访问到了一个样式错乱的页面，除非手动刷新，否则在资源缓存过期之前，页面会一直执行错误。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;先部署资源，再部署页面&lt;/strong&gt;：在部署时间间隔之内，有旧版本资源本地缓存的用户访问网站，由于请求的页面是旧版本的，资源引用没有改变，浏览器将直接使用本地缓存，这种情况下页面展现正常；但没有本地缓存或者缓存过期的用户访问网站，就会出现旧版本页面加载新版本资源的情况，导致页面执行错误，但当页面完成部署，这部分用户再次访问页面又会恢复正常了。
+好的，上面一坨分析想说的就是：先部署谁都不成！都会导致部署过程中发生页面错乱的问题。所以，访问量不大的项目，可以让研发同学苦逼一把，等到半夜偷偷上线，先上静态资源，再部署页面，看起来问题少一些。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;但是，大公司超变态，没有这样的“绝对低峰期”，只有“相对低峰期”。So，为了稳定的服务，还得继续追求极致啊！&lt;/p&gt;
+
+&lt;p&gt;这个奇葩问题，起源于资源的 &lt;strong&gt;覆盖式发布&lt;/strong&gt;，用 待发布资源 覆盖 已发布资源，就有这种问题。解决它也好办，就是实现 &lt;strong&gt;非覆盖式发布&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/10.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;看上图，用文件的摘要信息来对资源文件进行重命名，把摘要信息放到资源文件发布路径中，这样，内容有修改的资源就变成了一个新的文件发布到线上，不会覆盖已有的资源文件。上线过程中，先全量部署静态资源，再灰度部署页面，整个问题就比较完美的解决了。&lt;/p&gt;
+
+&lt;p&gt;所以，大公司的静态资源优化方案，基本上要实现这么几个东西：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;配置超长时间的本地缓存 —— 节省带宽，提高性能
+采用内容摘要作为缓存更新依据 —— 精确的缓存控制
+静态资源CDN部署 —— 优化网络请求
+更资源发布路径实现非覆盖式发布 —— 平滑升级&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;全套做下来，就是相对比较完整的静态资源缓存控制方案了，而且，还要注意的是，静态资源的缓存控制要求在&lt;strong&gt;前端所有静态资源加载的位置都要做这样的处理&lt;/strong&gt;。是的，所有！什么js、css自不必说，还要包括js、css文件中引用的资源路径，由于涉及到摘要信息，引用资源的摘要信息也会引起引用文件本身的内容改变，从而形成级联的摘要变化，大概示意图就是：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/11.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;好了，目前我们快速的学习了一下前端工程中关于静态资源缓存要面临的优化和部署问题，新的问题又来了：这™让工程师怎么写码啊！！！&lt;/p&gt;
+
+&lt;p&gt;要解释优化与工程的结合处理思路，又会扯出一堆有关模块化开发、资源加载、请求合并、前端框架等等的工程问题，以上只是开了个头，解决方案才是精髓，但要说的太多太多，有空再慢慢展开吧。或者大家可以去我的blog看其中的一些拆解：&lt;a href=&quot;https://github.com/fouber/blog&quot;&gt;fouber/blog · GitHub&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;总之，前端性能优化绝逼是一个工程问题！&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;以上不是我YY的，可以观察 百度 或者 facebook 的页面以及静态资源源代码，查看它们的资源引用路径处理，以及网络请中静态资源的缓存控制部分。再次赞叹facebook的前端工程建设水平，跪舔了。&lt;/p&gt;
+
+&lt;p&gt;建议前端工程师多多关注前端工程领域，也许有人会觉得自己的产品很小，不用这么变态，但很有可能说不定某天你就需要做出这样的改变了。而且，如果我们能把事情做得更极致，为什么不去做呢？&lt;/p&gt;
+
+&lt;p&gt;另外，也不要觉得这些是运维或者后端工程师要解决的问题。如果由其他角色来解决，大家总是把自己不关心的问题丢给别人，那么前端工程师的开发过程将受到极大的限制，这种情况甚至在某些大公司都不少见！&lt;/p&gt;
+
+&lt;p&gt;妈妈，我再也不玩前端了。。。。5555&lt;/p&gt;
+
+&lt;h3 id=&quot;更新&quot;&gt;更新&lt;/h3&gt;
+
+&lt;p&gt;========================[ 10.29更新 ]========================&lt;/p&gt;
+
+&lt;p&gt;这里更新一下：&lt;/p&gt;
+
+&lt;p&gt;在评论中， @陈钢@fleuria @林翔 提到了rails，刚刚去看了一下，确实是完成了以上所说的优化细节，对整个静态资源的管理上的思考于本答案描述的一致。很遗憾我直到今天（2014-10-29）才了解到rails中的assets pipeline。这里向以上3位同学道歉，原谅我的无知。&lt;/p&gt;
+
+&lt;p&gt;不过整篇回答没有讲解到具体的解决方案实现思路，只是介绍了前端在工程化方向的思考，答案本身是可用的，了解rails的人也可以把此答案当做是对rails中assets pipeline设计原理的分析。&lt;/p&gt;
+
+&lt;p&gt;rails通过把静态资源变成erb模板文件，然后加入&amp;lt;%= asset_path ‘image.png’ %&amp;gt;，上线前预编译完成处理，不得不承认，fis的实现思路跟这个几乎完全一样，但我们当初确实不知道有rails的这套方案存在。&lt;/p&gt;
+
+&lt;p&gt;相关资料：英文版：&lt;a href=&quot;http://guides.rubyonrails.org/asset_pipeline.html&quot;&gt;The Asset Pipeline&lt;/a&gt;，中文版：&lt;a href=&quot;http://guides.ruby-china.org/asset_pipeline.html&quot;&gt;Asset Pipeline&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;========================[ 10.31更新 ]========================&lt;/p&gt;
+
+&lt;p&gt;用 &lt;a href=&quot;[http://fis.baidu.com/]&quot;&gt;F.I.S&lt;/a&gt; 包装了一个小工具，完整实现整个回答所说的最佳部署方案，并提供了源码对照，可以感受一下项目源码和部署代码的对照。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;源码项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project&quot;&gt;fouber/static-resource-digest-project · GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;部署项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project-release&quot;&gt;fouber/static-resource-digest-project-release · GitHub&lt;/a&gt;
+部署项目可以理解为线上发布后的结果，可以在部署项目里查看所有资源引用的md5化处理。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这个示例也可以用于和assets pipeline做比较。fis没有assets的目录规范约束，而且可以以独立工具的方式组合各种前端开发语言（coffee、less、sass/scss、stylus、markdown、jade、ejs、handlebars等等你能想到的），并与其他后端开发语言结合。&lt;/p&gt;
+
+&lt;p&gt;assets pipeline的设计思想值得独立成工具用于前端工程，fis就当做这样的一个选择吧。&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 17 Feb 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/02/bigcompany/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/02/bigcompany/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>cmd规范与sea.js</title>
+        <description>&lt;h3 id=&quot;cmd规范&quot;&gt;cmd规范：&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;特性：
+    &lt;ul&gt;
+      &lt;li&gt;一个模块就是一个单独的文件&lt;/li&gt;
+      &lt;li&gt;由于每个模块都是属于define关键字函数的回调函数被调用，每个模块都是一个单独的作用域&lt;/li&gt;
+      &lt;li&gt;预加载、懒执行（预加载就是预先把所有的模块全部加载完，懒执行就是需要执行哪块才执行哪块）&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;关键字
+    &lt;ul&gt;
+      &lt;li&gt;define	 定义一个模块&lt;/li&gt;
+      &lt;li&gt;require 加载一个模块&lt;/li&gt;
+      &lt;li&gt;exports 暴露一个模块&lt;/li&gt;
+      &lt;li&gt;module	 模块&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;模块系统主要解决模块的定义依赖和导出&quot;&gt;模块系统主要解决模块的定义、依赖和导出&lt;/h2&gt;
+
+&lt;p&gt;伪代码如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/node/wei.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;替换成真正的代码：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/node/true.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;seajs&quot;&gt;sea.js&lt;/h3&gt;
+
+&lt;p&gt;sea.js在互联网公司里面主要是一些现有的项目还在使用，但是从学习的角度上来说，还是可以学习的，可以让我们知道一个模块化的标准库主要有哪些API，另外我们的node.js的模块化方面的API和sea.js也是很像的。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://seajs.org/docs/&quot;&gt;官网地址&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;用npm安装：&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install seajs --save&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;文件夹名称含义&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;dist  我们要引用的sea.js库的文件夹，其中sea.js是压缩过的，类似jquery.min.js,还有一个sea-debug.js,类似没压缩过的jQuery,方便我们debug调试的&lt;/li&gt;
+      &lt;li&gt;docs  文档&lt;/li&gt;
+      &lt;li&gt;lib 这是写了一个兼容node.js的版本，不用管&lt;/li&gt;
+      &lt;li&gt;src sea.js的源代码&lt;/li&gt;
+      &lt;li&gt;tests 测试文件
+&lt;img src=&quot;/images/posts/node/sea.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;书写seajs代码的步骤&quot;&gt;书写sea.js代码的步骤&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;html文件中引入sea.js库&lt;/li&gt;
+  &lt;li&gt;使用seajs.use加载主模块（也叫入口模块），起名一般叫main.js&lt;/li&gt;
+  &lt;li&gt;模块的定义方法
+    &lt;ul&gt;
+      &lt;li&gt;在我们的sea.js当中一个模块就是一个文件&lt;/li&gt;
+      &lt;li&gt;调用define函数定义主模块&lt;/li&gt;
+      &lt;li&gt;用require函数加载其他第三方模块&lt;/li&gt;
+      &lt;li&gt;用module.exports或exports来暴露当前模块的东西&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;注意点
+    &lt;ul&gt;
+      &lt;li&gt;define(function(require,exports,module){});这里面的require,exports,module三个参数的名字是固定写法，不能简写，顺序不能错了 记忆方法：rem –&amp;gt; 依赖注入&lt;/li&gt;
+      &lt;li&gt;如果define里的参数想省略，只能从后面开始省略，只要写了后面的，前面的必须要写上 –&amp;gt; 推荐写全，不要省&lt;/li&gt;
+      &lt;li&gt;如果一个模块既不需要公开成员变量，也不需要依赖第三方模块，那么可以全部省略&lt;/li&gt;
+      &lt;li&gt;seajs.use(“入口模块”)可以加回调函数，形式如：seajs.use(“入口模块”,callback);&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;seajs的路径问题&quot;&gt;seajs的路径问题&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;在sea.js当中，js/main和./js/main的含义不是一样的
+    &lt;ul&gt;
+      &lt;li&gt;js/main代表的是在sea.js所在的文件为基准去找，所以找到的是 –&amp;gt; seajs库所在的父级文件夹/js/main.js 这样的话会找不到的&lt;/li&gt;
+      &lt;li&gt;./js/main代表的是以当前html文件去找&lt;/li&gt;
+      &lt;li&gt;seajs.use(),require(“xxx”) –&amp;gt; 其实这里的xxx叫模块标识，不是路径&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;config的作用就是为了简化调用模块
+    &lt;ul&gt;
+      &lt;li&gt;base 设置路径&lt;/li&gt;
+      &lt;li&gt;alias 设置模块的别名，简化调用&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/node/base.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;默认的base值是seajs库文件所在的父文件夹&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;注意：如果没有特殊说明，任何时候尽量用相对路径。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;seajs如何把非cmd模块转换成cmd模块&quot;&gt;seajs如何把非cmd模块转换成cmd模块&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/node/transform.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;不管是jQuery还是zepto,如果你想把它们改造成一个符合cmd规范的模块，必须加上一段类似上面的代码。&lt;/p&gt;
+
+&lt;h3 id=&quot;seajs之moduleexports与exports辨析&quot;&gt;sea.js之module.exports与exports辨析&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;本质上用的还是module.exports这个对象，exports的值是module.exports 的引用地址，通过这种方式，我们可以少写一个”module.”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    define(function(require,exports,module){
+          console.log(exports === module.exports);    //true
+    })
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;module.exports 指向新的对象时，exports 将会断开了与 module.exports 的引用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;如何理解预加载懒执行&quot;&gt;如何理解预加载、懒执行&lt;/h3&gt;
+
+&lt;p&gt;预加载就是预先把所有的模块全部加载完，懒执行就是需要执行哪块才执行哪块&lt;/p&gt;
+
+&lt;h3 id=&quot;加载流程理解&quot;&gt;加载流程理解&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;html文件加载主模块&lt;/li&gt;
+  &lt;li&gt;主模块加载依赖的第三方模块&lt;/li&gt;
+  &lt;li&gt;第三方模块如果还有其他的第三方模块依赖，则进一步加载其他第三方模块&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;seajs模块加载原理分析&quot;&gt;sea.js模块加载原理分析&lt;/h3&gt;
+
+&lt;p&gt;sea.js的require,use方法之所以能够加载js文件，本质上都是利用给script标签一个src属性地址，并且嵌入追加到DOM树中的时候，会自动去下载这个js文件并且会执行&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function loadJs(path,callback){
+  var oHead = document.getElementsByTagName(&quot;head&quot;)[0];
+  var oNode = document.createElement(&quot;script&quot;);
+  var isSupportOnload = &quot;onload&quot; in oNode;
+  if(isSupportOnload){
+    oNode.onload = function(){
+      if(callback &amp;amp;&amp;amp; typeof callback === 'function'){
+        callback();
+      }
+    }
+  }else{
+    oNode.onreadystatechange = function(){
+      if(oNode.readyState === 'loaded' || oNode.readyState === 'complete' &amp;amp;&amp;amp; callback &amp;amp;&amp;amp; typeof callback === 'function'){
+        callback();
+      }
+    }
+  }
+  oNode.setAttribute(&quot;type&quot;,&quot;text/javascript&quot;);
+  var reg = /\.js$/;
+  if(!reg.test(path)){
+    path += &quot;.js&quot;;
+  }
+  oNode.setAttribute(&quot;src&quot;,path);
+  oHead.appendChild(oNode);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 15 Jan 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/01/cmd/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/01/cmd/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>模块化开发</title>
+        <description>&lt;h3 id=&quot;一句话概述&quot;&gt;一句话概述：&lt;/h3&gt;
+&lt;p&gt;一个概念(模块化) + 二个规范（amd + cmd） + 二个js库(sea.js+ require.js)&lt;/p&gt;
+
+&lt;h3 id=&quot;模块化的介绍&quot;&gt;模块化的介绍&lt;/h3&gt;
+&lt;p&gt;传统开发方式带来的问题：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;代码由于组织混乱很容易出错&lt;/li&gt;
+  &lt;li&gt;出错了很难调试&lt;/li&gt;
+  &lt;li&gt;后期难以维护&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;模块化的好处：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;代码组织起来更加清晰，提升开发效率&lt;/li&gt;
+  &lt;li&gt;减少了意外的bug的出现，便于代码后期维护&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;模块化规范&quot;&gt;模块化规范&lt;/h3&gt;
+
+&lt;p&gt;几种常见的模块化规范概述&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;浏览器端规范
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://github.com/amdjs/amdjs-api/wiki/AMD&quot;&gt;amd&lt;/a&gt; 代表：require.js&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://github.com/cmdjs/specification/blob/master/draft/module.md&quot;&gt;cmd&lt;/a&gt; 代表：sea.js&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;服务器端规范
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;http://wiki.commonjs.org/wiki/CommonJS&quot;&gt;commonjs&lt;/a&gt; 代表：node.js&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;跨浏览器、服务器的模块规范
+    &lt;ul&gt;
+      &lt;li&gt;umd（兼容 CommonJS 和 AMD 的语法糖，是模块定义的跨平台解决方案。）&lt;/li&gt;
+      &lt;li&gt;ECMAScript 2015 (ES6)模块化规范&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 22 Dec 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/12/node/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/12/node/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Angular实战Demo</title>
+        <description>&lt;h2 id=&quot;todomvc案例&quot;&gt;todomvc案例&lt;/h2&gt;
+
+&lt;h3 id=&quot;todomvc-功能分析&quot;&gt;todomvc 功能分析&lt;/h3&gt;
+
+&lt;p&gt;1.显示数据列表&lt;/p&gt;
+
+&lt;p&gt;2.添加任务&lt;/p&gt;
+
+&lt;p&gt;3.删除任务
+  — 使用了数组的splice&lt;/p&gt;
+
+&lt;p&gt;4.修改任务&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;只是改变页面是否可以编辑的一个状态&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;5.切换是任务是否完成的状态&lt;/p&gt;
+
+&lt;p&gt;6.批量的切换任务是否完成的状态&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;使用了ng-change事件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;7.清除已完成任务&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;尽量不要在循环中添加或删除数组元素。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;7.1 控制清除已完成任务按钮的显示与否&lt;/p&gt;
+
+&lt;p&gt;8.显示未完成的任务数&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;是给ng-bind指定一个方法,方法最终会返回一个具体的值,&lt;/li&gt;
+  &lt;li&gt;ng-bind 会把这个值渲染到页面。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;9.切换不同状态任务的显示与否&lt;/p&gt;
+
+&lt;h3 id=&quot;todomvc-code&quot;&gt;todomvc code&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/Feibuli/Angular&quot;&gt;点击这里下载&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 20 Nov 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/11/AngularDemo/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/11/AngularDemo/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Angular初识（三）</title>
+        <description>&lt;h3 id=&quot;复习指令&quot;&gt;复习指令&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;ng-app:相当于一个入口，告诉angular来管理我们页面的Html代码&lt;/li&gt;
+  &lt;li&gt;ng-click:用于注册点击事件&lt;/li&gt;
+  &lt;li&gt;ng-model:用于进行双向数据绑定，&lt;/li&gt;
+  &lt;li&gt;ng-init:用于初始化数据模型&lt;/li&gt;
+  &lt;li&gt;ng-controller:指向了创建的控制器。&lt;/li&gt;
+  &lt;li&gt;ng-bind:也是能够绑定数据模型的值,只能作用于双标签元素&lt;/li&gt;
+  &lt;li&gt;ng-cloak:利用了angular会移除所以样式名为ng-cloak的样式的特性。&lt;/li&gt;
+  &lt;li&gt;ng-bind-html:用于安全的渲染html代码&lt;/li&gt;
+  &lt;li&gt;ng-repeat:渲染数据列表, ng-repeat=”item in data  track by $index”&lt;/li&gt;
+  &lt;li&gt;ng-class:操作样式&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;key001:样式名001,key002:样式名002&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}[&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'key&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;001&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;
+           &lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'样式名001':布尔值,'样式名002':布尔值&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;11.ng-hide/ng-show:显示或隐藏页面元素&lt;/p&gt;
+
+&lt;p&gt;12.ng-if/ng-switch ng-switch-when&lt;/p&gt;
+
+&lt;h3 id=&quot;自定义指令简单介绍及使用&quot;&gt;自定义指令简单介绍及使用&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;自定义指令无外乎增强了HTML,提供了额外的功能。&lt;/li&gt;
+  &lt;li&gt;内部指令基本能满足我们的需求。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;少数情况下我们有一些特殊的需要，可以通过自定义指令的方式实现：&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;通过 模块对象的directive方法创建
+    &lt;ul&gt;
+      &lt;li&gt;有两个参数，第一个参数，是指令的名字：必须是驼峰命名法命名
+            第二个参数和控制器的第二个参数一样,在第二个参数的function里直接返回的一个obj对象&lt;/li&gt;
+      &lt;li&gt;使用时：需要将指令的名字转成小写，并以-分割原先在大小写字母&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;自定义指令中回函数里返回的对象的属性&quot;&gt;自定义指令中回函数里返回的对象的属性&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;template:需要一个字符串，最终这个字符串值被被添加到自定义指令所在标签的innerHTML位置&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;templateUrl:需要一个字符串，这个字符串是一个文本文件的路径,anuglar最终会异步请求这个文件，把拿到的内容插入到自定义指令所在的标签的innerHTML位置,
+该字符串也可以是script标签的id值，把script标签中的内容当作模板字符串来使用
+注意：script的type属性需要为”text/ng-template”&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;restrict:也是需要一个字符，可以是A,E,C,M 这4个字符中任何一个，也可以任意的组合，A:以属性的形式使用，E:以自定义标签的形式使用，C:表示以类样式名的形式使用，M:以注释的形式使用&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;replace: 需要一个布尔值，为true,会将自定义指令所在的标签替换为模板字符串。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;transclude:转置，是需要一个布尔值，为true时会把自定义指令所在标签的innerHTML值添加到模板字符串中，需要与ng-transclude指令配合使用，ng-transclude指令需要将值插入到哪个元素的innerHTML位置.不能与replace指令同用。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;scope:需要一个对象，可以获取到自定义指令所在标签的属性值：
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;属性名:'@test',&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;属性值需要以@开头,@后面是自定义指令所在标签的属性名，最终在模板字符串中通过表达式可以使用scope的属性名可以直接输出&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+    &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;test:'@'//&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;是简写方式&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;link:指向一个function，这个function有三个参数：
+    &lt;ul&gt;
+      &lt;li&gt;scope: 类似于控制器中的$scope,也可以暴露一些值。&lt;/li&gt;
+      &lt;li&gt;element:这是一个jqLite对象，是自定义指令所在标签的jqLite对象&lt;/li&gt;
+      &lt;li&gt;attributes:是自定义指令所在标签的所以属性的集合.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;过滤器filter&quot;&gt;过滤器(filter)&lt;/h2&gt;
+
+&lt;h3 id=&quot;格式化数据的过滤器&quot;&gt;格式化数据的过滤器&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;currency 将数字转成货币的形式显示
+    &lt;blockquote&gt;
+      &lt;p&gt;语法在数据模型后面加上 |currency 参数，通过冒号:的方式传递
+  ‘&amp;lt;p&amp;gt;{{money | currency :’￥’ }}&amp;lt;/p&amp;gt;’&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;date 将整数形式的日期转换为用户能够识别的形式;
+    &lt;blockquote&gt;
+      &lt;p&gt;语法在数据模型后面加上 |date 参数，通过冒号:的方式传递
+  ‘&amp;lt;p&amp;gt;{{money | currency :’￥’ }}&amp;lt;/p&amp;gt;’&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;limitTo 是控制字符串显示的长度
+    &lt;ul&gt;
+      &lt;li&gt;有两个参数，第一个表示需要显示长度
+          第二个表示从哪个索引开始显示&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;orderBy,需要一个字符串作为参数：这个字符就是数组中元素的一个属性名
+  ,默认是按升序排列的，如果给这个字符前加上一个-号表示降序排列.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;json&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;在js中使用过滤器的方式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c1&quot;&gt;// $filter其实是个方法&lt;/span&gt;
+           &lt;span class=&quot;c1&quot;&gt;// 第一个参数:就是过滤器的名字&lt;/span&gt;
+           &lt;span class=&quot;c1&quot;&gt;// 会返回一个方法&lt;/span&gt;
+           &lt;span class=&quot;c1&quot;&gt;//               + 至少有一个参数(就是使用到的数据)&lt;/span&gt;
+           &lt;span class=&quot;c1&quot;&gt;//               + 其他的参数依次是过滤器所使用到的参数&lt;/span&gt;
+           &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'date'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;myDate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'yyyy年MM月-dd日 HH:mm:ss'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+           &lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;1234588910120&lt;/li&gt;
+  &lt;li&gt;1234567891011&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;过滤数据的过滤器&quot;&gt;过滤数据的过滤器&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;filter&lt;/li&gt;
+  &lt;li&gt;一般是与ng-repeat指令共同使用&lt;/li&gt;
+  &lt;li&gt;参数：可以是一个普通类型-angular会对这样的参数进行全局匹配;
+      也可以是一个object对象-angular就会根据对象中的属性及属性值去数据中的每一个元素中寻找相应的属性，当前属性值相等的时候数据就会被显示。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 12 Nov 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/11/Angular3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/11/Angular3/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Angular初识（二）</title>
+        <description>&lt;h3 id=&quot;angular-vs-jquery&quot;&gt;Angular VS jQuery&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;jQuery:库
+    &lt;ul&gt;
+      &lt;li&gt;封装了一些常用的方法，我们主动调用这些方法&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Angular:框架
+    &lt;ul&gt;
+      &lt;li&gt;框架提供了一些结构或者模式，&lt;/li&gt;
+      &lt;li&gt;我们按照框架提供的规则去写代码&lt;/li&gt;
+      &lt;li&gt;然后由框架自己去执行相应的操作&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;思想上:
+    &lt;ul&gt;
+      &lt;li&gt;jQuery: 提高了dom操作的开发效率。&lt;/li&gt;
+      &lt;li&gt;Angular: 不提倡dom操作，几乎没有dom操作(底层还是操作的dom)
+        &lt;ul&gt;
+          &lt;li&gt;angular中操作dom &lt;code class=&quot;highlighter-rouge&quot;&gt;angular.element()&lt;/code&gt;，叫做jqLite&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;angularelement&quot;&gt;angular.element&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;轻量级的jQuery,&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;注意：在获取dom对象时传入的参数是一个原生dom对象&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;复习并总结angular开发流程&quot;&gt;复习并总结Angular开发流程&lt;/h3&gt;
+
+&lt;p&gt;0.通过 npm/bower/暴力的方式/cdn 拿到想到angular.js文件。&lt;/p&gt;
+
+&lt;p&gt;1.在HTML代码中引入angular.js这个文件。&lt;/p&gt;
+
+&lt;p&gt;2.在HTML代码上加上ng-app指令，告诉angular来管理我们的代码，这个指令只能使用一次。&lt;/p&gt;
+
+&lt;p&gt;3.在JS代码中通过&lt;code class=&quot;highlighter-rouge&quot;&gt;angular.module('模块名',[])&lt;/code&gt;创建一个模块，然后在HTML中的ng-app指令指定一下模块名&lt;code class=&quot;highlighter-rouge&quot;&gt;'ng-app=&quot;模块名&quot;'&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;4.在JS代码中创建控制器&lt;code class=&quot;highlighter-rouge&quot;&gt;xxx.controller('控制器的名字',function(){})&lt;/code&gt;,&lt;/p&gt;
+
+&lt;p&gt;在HTML代码中通过ng-controller指令由我们当前的控制器来管理数据模型&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ng-controller=&quot;控制器的名字&quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;5.建模（根据页面原型抽象出数据模型）, 最终得到视图模型(ViewModel)&lt;/p&gt;
+
+&lt;p&gt;6.通过&lt;code class=&quot;highlighter-rouge&quot;&gt;$scope&lt;/code&gt;来暴露页面上所需要使用的一些数据&lt;/p&gt;
+
+&lt;p&gt;7.在HTML代码中通过&lt;code class=&quot;highlighter-rouge&quot;&gt;ng-model/ng-click/{ { } }&lt;/code&gt; 将刚刚暴露的数据绑定到页面上去&lt;/p&gt;
+
+&lt;p&gt;8.在JS中写一些具体业务相关的代码&lt;/p&gt;
+
+&lt;h3 id=&quot;复习mvc&quot;&gt;复习MVC&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;MVC是一种设计思想,它是约定了程序的结构应该是怎么。&lt;/li&gt;
+  &lt;li&gt;每一个组成原件都会有一个明确的职责。&lt;/li&gt;
+  &lt;li&gt;提高代码的结构和可维护性(代码的执行效率肯定是不会提高的，10行代码，会分到10个不同的方法。);&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;scope&quot;&gt;$scope&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;视图和控制器之间的数据桥梁&lt;/li&gt;
+  &lt;li&gt;用于在视图和控制器之间传递数据&lt;/li&gt;
+  &lt;li&gt;用来暴露数据模型（数据，行为）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/Angular/scope.png&quot; alt=&quot;$scope&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;viewmodel&quot;&gt;ViewModel&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;$scope 实际上就是MVVM中所谓的VM（视图模型）&lt;/li&gt;
+  &lt;li&gt;正是因为$scope在Angular中大量使用甚至盖过了C（控制器）的概念，所以很多人（包括我）把Angular称之为MVVM框架&lt;/li&gt;
+  &lt;li&gt;这一点倒是无所谓，具体看怎么用罢了&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;模块&quot;&gt;模块&lt;/h2&gt;
+
+&lt;h3 id=&quot;模块的创建&quot;&gt;模块的创建&lt;/h3&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;通过&lt;code class=&quot;highlighter-rouge&quot;&gt;anuglar.mdoule()&lt;/code&gt;方法来创建模块.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;em&gt;注意,如果传入两个参数就是去创建模块，如果只传入第一个参数，就会变成获取模块。&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;模块的划分式&quot;&gt;模块的划分式&lt;/h3&gt;
+
+&lt;h4 id=&quot;1根据项目中具体的功能去划分模块&quot;&gt;1.根据项目中具体的功能去划分模块&lt;/h4&gt;
+
+&lt;h4 id=&quot;2根据具体的文件功能的类型去划分模块&quot;&gt;2.根据具体的文件功能的类型去划分模块&lt;/h4&gt;
+
+&lt;h2 id=&quot;控制器的创建方式&quot;&gt;控制器的创建方式&lt;/h2&gt;
+
+&lt;h3 id=&quot;传统的方式创建控制器不推荐使用这种方式&quot;&gt;传统的方式创建控制器(不推荐使用这种方式)&lt;/h3&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c1&quot;&gt;// 通过全局函数来创建控制器&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// angular会把我们创建的全局函数作为控制器使用&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;demoController&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'小明'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;面向对象的方式创建控制器&quot;&gt;面向对象的方式创建控制器&lt;/h3&gt;
+
+&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-controller=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;demoController as obj &quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        
+        
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 1.引入angular.js文件 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;node_modules/angular/angular.js&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 3.创建模块&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;angular&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'myApp'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,[]);&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// 4.创建控制器&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;controller&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'demoController'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// 可以当作构造函数来使用&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;小明&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;$scope&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;安全的创建控制器的方式&quot;&gt;安全的创建控制器的方式&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;原因：angular在控制器的回调函数中是通过参数名来传递参数的。&lt;/li&gt;
+  &lt;li&gt;通过将第二个参数改为数据组：数据的最后一个参数还是原来的fucntion,数据前的参数是我们想要anuglar传递的参数的字符串形式，fucntion里的参数需要与数组前面的元素一对应。
+&lt;code class=&quot;highlighter-rouge&quot;&gt;app.controller('demoController',['$scope','$log',function($scope,$log){}])&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;依赖注入的原理&quot;&gt;依赖注入的原理&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;核心是toString()&lt;/li&gt;
+  &lt;li&gt;获取函数形参的方式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;指令&quot;&gt;指令&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在 AngularJS 中将前缀为 ng- 这种属性称之为指令，其作用就是为 DOM 元素调用方法、定义行为绑定数据等&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;简单说：当一个 Angular 应用启动，Angular 就会遍历 DOM 树来解析 HTML，根据指令不同，完成不同操作&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-bind
+    &lt;ul&gt;
+      &lt;li&gt;用来解决表达式闪烁问题&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;p ng-bind=&quot;数据模型&quot;&amp;gt;&amp;lt;/p&amp;gt;&lt;/code&gt;
+  &lt;em&gt;注意：只能够在双标签中使用ng-bind指令&lt;/em&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-cloak
+    &lt;ul&gt;
+      &lt;li&gt;用来解决表达式闪烁问题&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;p class=&quot;ng-cloak&quot;&amp;gt;&amp;lt;/p&amp;gt;&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;利用angular在加载会移除页面上所以名为ng-cloak的样式名的特性。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ngSanitize模块
+&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install angular-sanitize&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;使用的是ng-bind-html指令来渲染数据模型。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-repeat
+    &lt;ul&gt;
+      &lt;li&gt;可以用来循环输出数组&lt;/li&gt;
+      &lt;li&gt;写在哪个元素上就是循环哪个元素。&lt;/li&gt;
+      &lt;li&gt;语法：类似于forin 循环
+        &lt;blockquote&gt;
+          &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;div ng-repeat=&quot;item in data &quot;&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt;&lt;/p&gt;
+        &lt;/blockquote&gt;
+      &lt;/li&gt;
+      &lt;li&gt;track by $index 解决数组中数据有重得的问题
+        &lt;ul&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;li ng-repeat=&quot;item in tesData track by $index&quot;&amp;gt;&amp;lt;/li&amp;gt;&lt;/code&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;还可以用来渲染key,value对&lt;/li&gt;
+      &lt;li&gt;ng-repeat 在遍历里会暴露一些数据模型,
+        &lt;ul&gt;
+          &lt;li&gt;$even:提供了一个布尔值，当为true时表示当前数据是第偶数条数据,从索引0开始计算&lt;/li&gt;
+          &lt;li&gt;$odd:提供了一个布尔值，当为true时表示当前数据是第奇数条数据,从索引0开始计算&lt;/li&gt;
+          &lt;li&gt;$first,$last ,$middle
+ng-class:&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;从多种样式中选择一个样式
+        &lt;ul&gt;
+          &lt;li&gt;语法：类似于从一个key,value对象中获取其中一个属性的值&lt;/li&gt;
+          &lt;li&gt;ng-class=”{‘A’:’red’,’B’:’blue’,’C’:’green’}”&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;从多种样式中选择多个
+        &lt;ul&gt;
+          &lt;li&gt;语法：也是写一个key,value对象，这里的key是我们提供的类样式名，value是一个布尔值，为true时对应的key会被作为样式名加入到class中&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ng-hide/ng-show&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;ng-hide：需要一个布尔值：当为true时为隐藏当前元素&lt;/li&gt;
+  &lt;li&gt;ng-show: 需要一个布尔值：当为true时为显示当前元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ng-if:需要一个布尔值：当为true时为显示当前元素
+                        为false时是删除当前元素&lt;/p&gt;
+
+&lt;p&gt;ng-switch:与ng-switch-when同用，类似与js中的switch case&lt;/p&gt;
+
+&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-switch=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-switch-when=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;小明&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;我是小明&lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-switch-when=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;小红&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;我是小红&lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;div&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ng-switch-when=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;小月&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;我是小月&lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;其他常用指令&quot;&gt;其他常用指令&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ng-checked：
+    &lt;ul&gt;
+      &lt;li&gt;单选/复选是否选中,是单向数据绑定&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-selected：
+    &lt;ul&gt;
+      &lt;li&gt;是否选中&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-disabled：
+    &lt;ul&gt;
+      &lt;li&gt;是否禁用&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-readonly：
+    &lt;ul&gt;
+      &lt;li&gt;是否只读&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;常用事件指令&quot;&gt;常用事件指令&lt;/h3&gt;
+
+&lt;p&gt;不同于以上的功能性指令，Angular还定义了一些用于和事件绑定的指令：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ng-blur：失去焦点&lt;/li&gt;
+  &lt;li&gt;ng-focus：获得焦点&lt;/li&gt;
+  &lt;li&gt;ng-change：改变事件&lt;/li&gt;
+  &lt;li&gt;ng-copy：复制事件&lt;/li&gt;
+  &lt;li&gt;ng-click： ng-click=”add()”&lt;/li&gt;
+  &lt;li&gt;ng-dblclick：双击事件&lt;/li&gt;
+  &lt;li&gt;ng-submit： 表单提交事件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;指令的标准使用方式&quot;&gt;指令的标准使用方式&lt;/h3&gt;
+&lt;p&gt;data-xxx,在使用angular指令时，只需要在原先的指令前加上data-前缀。
+x-&lt;/p&gt;
+</description>
+        <pubDate>Sat, 08 Oct 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/10/Angular2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/10/Angular2/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Angular初识（一）</title>
+        <description>&lt;h3 id=&quot;开放性讨论&quot;&gt;开放性讨论&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;为什么这几年前端行业好像突然间多了那么多东西
+    &lt;ul&gt;
+      &lt;li&gt;我们现在做的网站不再是简简单单的呈现静态页面，而是一个web应用程序。&lt;/li&gt;
+      &lt;li&gt;一大批后端程序员转型为前端，大大提高了前端的水准。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;angular简介&quot;&gt;Angular简介&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;jQuery ：库
+    &lt;ul&gt;
+      &lt;li&gt;封装了一些常用的方法，我们主动的调用这些方法提高了代码的利用，以及代码后期的维护&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Angular: 前端框架
+    &lt;ul&gt;
+      &lt;li&gt;框架提供了一些结构或者模式，&lt;/li&gt;
+      &lt;li&gt;我们是根据框架提供的结构或者模式去书写代码&lt;/li&gt;
+      &lt;li&gt;由框架帮助我们去执行相应的操作。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;什么是-angular&quot;&gt;什么是 Angular&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;一款非常优秀的前端高级 JS 框架&lt;/li&gt;
+  &lt;li&gt;最早由 Misko Hevery 等人创建&lt;/li&gt;
+  &lt;li&gt;2009 年被 Google 公式收购，用于其多款产品&lt;/li&gt;
+  &lt;li&gt;目前有一个全职的开发团队继续开发和维护这个库&lt;/li&gt;
+  &lt;li&gt;有了这一类框架就可以轻松构建 SPA 应用程序&lt;/li&gt;
+  &lt;li&gt;其核心就是通过指令扩展了 HTML，通过表达式绑定数据到 HTML。&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Angular不推崇DOM操作，也就是说在NG中几乎找不到任何的DOM操作&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;什么是-spa&quot;&gt;什么是 SPA&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;single page application&lt;/li&gt;
+  &lt;li&gt;单页应用程序&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;为什么使用-angular&quot;&gt;为什么使用 Angular&lt;/h3&gt;
+
+&lt;h3 id=&quot;安装-angular&quot;&gt;安装 Angular&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;暴力安装: 直接从本地硬盘中复制一个angular.js文件到项目中&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;通过工具安装
+    &lt;ul&gt;
+      &lt;li&gt;npm 方式 &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install angular&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;bower 方式 &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install angular&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;CDN - 扩展内容&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;em&gt;注意，每一种安装方式，本质都是为了拿到angular.js文件&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;指令&quot;&gt;指令&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;angular中以ng-开头的属性叫作指令&lt;/li&gt;
+  &lt;li&gt;ng-app 告诉angular来管理html代码，管理ng-app所在元素及其子元素。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ng-click 用来注册点击事件&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;var add = document.getElementById(‘add’);
+ add.onclick=function(){
+  val = (val-0)+1; // num.value = (num.value - 0) +1
+ }&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ng-model：var num = document.getElementById(‘num’).value&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;ng-init :进行初始化操作:  ng-init=”user.name=’小明’”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;angular-表达式&quot;&gt;Angular 表达式&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;就是把ng-model对应的值显示到页面中。&lt;/li&gt;
+  &lt;li&gt;语法：两个大括号的形式：{{}}&lt;/li&gt;
+  &lt;li&gt;{{user.name}}&lt;/li&gt;
+  &lt;li&gt;{{‘hello’+ user.name}}&lt;/li&gt;
+  &lt;li&gt;{{1+2}}&lt;/li&gt;
+  &lt;li&gt;{{[1,2,3,4]}}&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;angular-基础概念&quot;&gt;Angular 基础概念&lt;/h2&gt;
+
+&lt;h3 id=&quot;angular-的核心特性&quot;&gt;Angular 的核心特性&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;指令&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MVC&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;模块化  angular.module()&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;双向数据绑定&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;模块module&quot;&gt;模块(module)&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;angular.module(‘myApp’,[])
+    &lt;blockquote&gt;
+      &lt;p&gt;第一个参数是模块的名字
+第二个参数是一个数组，数组的元素是该模块所依赖其他模块的名字
+&lt;em&gt;注意,即使不依赖任何模块，也需要给第二个参数传递一个空数组&lt;/em&gt;
+&lt;em&gt;否则angular.module(‘myApp’)就是去获取名为myApp的模块对象&lt;/em&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;控制器controller&quot;&gt;控制器(controller)&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;angular.module(‘myApp’,[]).controller(‘demoController’,function($scope){})
+    &lt;blockquote&gt;
+      &lt;p&gt;第一个参数，是控制器的名字
+第二个参数，是一个回调函数，在回调函数里写我们想要的js代码。&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;双向数据绑定&quot;&gt;双向数据绑定&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;数据模型的值发生改变，就会导致页面值的改变.
+页面值的改变，就会导致数据模型值的改变，这各种相互影响的关系就是双向数据绑定。&lt;/li&gt;
+  &lt;li&gt;ng-model&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;单向数据绑定&quot;&gt;单向数据绑定&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;使用表达式显示数据模型的值。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;mvc-思想&quot;&gt;MVC 思想&lt;/h3&gt;
+
+&lt;h4 id=&quot;什么是-mvc-思想&quot;&gt;什么是 MVC 思想&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;M:Model 模型  :数据存储，一些业务逻辑&lt;/li&gt;
+  &lt;li&gt;V:View  视图 ：就是用来展示数据&lt;/li&gt;
+  &lt;li&gt;C:Controller 控制器: 调度业务逻辑&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;mvvm&quot;&gt;MVVM&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;M：&lt;/li&gt;
+  &lt;li&gt;V:&lt;/li&gt;
+  &lt;li&gt;VM: ViewModel-  $scope&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;watch&quot;&gt;$watch&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;用于监视数据模型的变化（并且只能监视数据模型的变化）&lt;/li&gt;
+  &lt;li&gt;$scope.$watch(‘数据模型名的字符串形式’,function(变化后的值,变化前的值){})&lt;/li&gt;
+  &lt;li&gt;$scope.$watch里的回调函数会默认执行一次。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;cdn---扩展内容&quot;&gt;CDN - 扩展内容&lt;/h2&gt;
+&lt;p&gt;content delivery network 
+内容分发网络&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;速度快&lt;/li&gt;
+  &lt;li&gt;减轻了服务器自身在带宽压力。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;相关链接&quot;&gt;相关链接&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;AngularJS 1.x 官方网站
+    &lt;ul&gt;
+      &lt;li&gt;https://angularjs.org/&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;AngularJS 2.x 官方网站
+    &lt;ul&gt;
+      &lt;li&gt;https://angular.io/&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Google Material Design for Angular
+    &lt;ul&gt;
+      &lt;li&gt;https://material.angularjs.org&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Angular UI（Angular最大的第三方社区）
+    &lt;ul&gt;
+      &lt;li&gt;http://angular-ui.github.io/&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;AngularJS中文社区
+    &lt;ul&gt;
+      &lt;li&gt;http://www.angularjs.cn/&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;AngularJS中文社区提供的文档（不用翻墙）
+    &lt;ul&gt;
+      &lt;li&gt;http://docs.angularjs.cn/api&lt;/li&gt;
+      &lt;li&gt;http://www.apjs.net/&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Mon, 05 Sep 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/09/Angular1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/09/Angular1/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>前端性能优化</title>
+        <description>&lt;p&gt;作者：斯迪   &lt;a href=&quot;https://www.zhihu.com/question/21658448/answer/18903129&quot;&gt;链接&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+&lt;p&gt;前端是庞大的，包括 HTML、 CSS、 Javascript、Image 、Flash等等各种各样的资源。&lt;/p&gt;
+
+&lt;p&gt;前端优化是复杂的，针对方方面面的资源都有不同的方式。那么，前端优化的目的是什么 ?&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;从用户角度而言，优化能够让页面加载得更快、对用户的操作响应得更及时，能够给用户提供更为友好的体验。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;从服务商角度而言，优化能够减少页面请求数、或者减小请求所占带宽，能够节省可观的资源。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;总之，恰当的优化不仅能够改善站点的用户体验并且能够节省相当的资源利用。&lt;/p&gt;
+
+&lt;h3 id=&quot;论点&quot;&gt;论点&lt;/h3&gt;
+
+&lt;p&gt;前端优化的途径有很多，按粒度大致可以分为两类：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;第一类是页面级别的优化，例如 HTTP请求数、脚本的无阻塞加载、内联脚本的位置优化等;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;第二类则是代码级别的优化，例如 Javascript中的DOM 操作优化、CSS选择符优化、图片优化以及 
+HTML结构优化等等。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;另外，本着提高投入产出比的目的，后文提到的各种优化策略大致按照投入产出比从大到小的顺序排列。
+　　&lt;/p&gt;
+&lt;h2 id=&quot;一页面级优化&quot;&gt;一、页面级优化&lt;/h2&gt;
+
+&lt;h3 id=&quot;1-减少http请求数&quot;&gt;1. 减少HTTP请求数。&lt;/h3&gt;
+
+&lt;p&gt;　　这条策略基本上所有前端人都知道，而且也是最重要最有效的。都说要减少 HTTP请求，那请求多了到底会怎么样呢 ?首先，每个请求都是有成本的，既包含时间成本也包含资源成本。一个完整的请求都需要经过DNS寻址、与服务器建立连接、发送数据、等待服务器响应、接收数据这样一个 “漫长” 而复杂的过程。&lt;/p&gt;
+
+&lt;p&gt;　　时间成本就是用户需要看到或者 “感受” 到这个资源是必须要等待这个过程结束的，资源上由于每个请求都需要携带数据，因此每个请求都需要占用带宽。另外，由于浏览器进行并发请求的请求数是有上限的，因此请求数多了以后，浏览器需要分批进行请求，因此会增加用户的等待时间，会给用户造成站点速度慢这样一个印象，即使可能用户能看到的第一屏的资源都已经请求完了，但是浏览器的进度条会一直存在。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;减少 HTTP请求数的主要途径包括：
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;(1). 从设计实现层面简化页面。&lt;/p&gt;
+
+        &lt;p&gt;如果你的页面像百度首页一样简单，那么接下来的规则基本上都用不着了。保持页面简洁、减少资源的使用时最直接的。如果不是这样，你的页面需要华丽的皮肤，则继续阅读下面的内容。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;(2). 合理设置 HTTP缓存。&lt;/p&gt;
+
+        &lt;p&gt;缓存的力量是强大的，恰当的缓存设置可以大大的减少 HTTP请求。以某首页为例，当浏览器没有缓存的时候访问一共会发出78个请求，共600多K数据，而当第二次访问即浏览器已缓存之后访问则仅有10个请求，共20多K数据（这里需要说明的是，如果直接 F5刷新页面的话效果是不一样的，这种情况下请求数还是一样，不过被缓存资源的请求服务器是 304响应，只有 Header没有Body ，可以节省带宽）。&lt;/p&gt;
+
+        &lt;p&gt;怎样才算合理设置 ?原则很简单，能缓存越多越好，能缓存越久越好。例如，很少变化的图片资源可以直接通过 HTTP Header中的Expires设置一个很长的过期头;变化不频繁而又可能会变的资源可以使用 Last-Modifed来做请求验证。尽可能的让资源能够在缓存中待得更久。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;(3). 资源合并与压缩。&lt;/p&gt;
+
+        &lt;p&gt;如果可以的话，尽可能的将外部的脚本、样式进行合并，多个合为一个。另外CSS、Javascript、Image 都可以用相应的工具进行压缩，压缩后往往能省下不少空间。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;(4). CSS Sprites。&lt;/p&gt;
+
+        &lt;p&gt;合并 CSS图片，减少请求数的又一个好办法。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;(5). Inline Images。&lt;/p&gt;
+
+        &lt;p&gt;使用 data: URL scheme的方式将图片嵌入到页面或 CSS中，如果不考虑资源管理上的问题的话，不失为一个好办法。如果是嵌入页面的话换来的是增大了页面的体积，而且无法利用浏览器缓存。使用在 CSS中的图片则更为理想一些。&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;(6). Lazy Load Images（自己对这一块的内容还是不了解）。&lt;/p&gt;
+
+        &lt;p&gt;这条策略实际上并不一定能减少 HTTP请求数，但是却能在某些条件下或者页面刚加载时减少 HTTP请求数。对于图片而言，在页面刚加载的时候可以只加载第一屏，当用户继续往后滚屏的时候才加载后续的图片。这样一来，假如用户只对第一屏的内容感兴趣时，那剩余的图片请求就都节省了。某首页曾经的做法是在加载的时候把第一屏之后的图片地址缓存在 Textarea标签中，待用户往下滚屏的时候才 “惰性” 加载。&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-将外部脚本置底将脚本内容在页面信息内容加载后再加载&quot;&gt;2. 将外部脚本置底（将脚本内容在页面信息内容加载后再加载）&lt;/h3&gt;
+
+&lt;p&gt;　　前文有谈到，浏览器是可以并发请求的，这一特点使得其能够更快的加载资源，然而外链脚本在加载时却会阻塞其他资源，例如在脚本加载完成之前，它后面的图片、样式以及其他脚本都处于阻塞状态，直到脚本加载完成后才会开始加载。&lt;/p&gt;
+
+&lt;p&gt;　　如果将脚本放在比较靠前的位置，则会影响整个页面的加载速度从而影响用户体验。解决这一问题的方法有很多，在 这里有比较详细的介绍 (这里是译文和 更详细的例子 )，而最简单可依赖的方法就是将脚本尽可能的往后挪，减少对并发下载的影响。&lt;/p&gt;
+
+&lt;h3 id=&quot;3-异步执行-inline脚本其实原理和上面是一样保证脚本在页面内容后面加载&quot;&gt;3. 异步执行 inline脚本(其实原理和上面是一样，保证脚本在页面内容后面加载。)&lt;/h3&gt;
+&lt;p&gt;　　inline脚本对性能的影响与外部脚本相比，是有过之而无不及。首页，与外部脚本一样， inline脚本在执行的时候一样会阻塞并发请求，除此之外，由于浏览器在页面处理方面是单线程的，当 inline脚本在页面渲染之前执行时，页面的渲染工作则会被推迟。&lt;/p&gt;
+
+&lt;p&gt;　　简而言之， inline脚本在执行的时候，页面处于空白状态。鉴于以上两点原因，建议将执行时间较长的 inline脚本异步执行，异步的方式有很多种，例如使用 script元素的defer 属性(存在兼容性问题和其他一些问题，例如不能使用 document.write)、使用setTimeout ，此外，在HTML5中引入了 Web Workers的机制，恰恰可以解决此类问题。&lt;/p&gt;
+
+&lt;h3 id=&quot;4-lazy-load-javascript只有在需要加载的时候加载在一般情况下并不加载信息内容&quot;&gt;4. Lazy Load Javascript（只有在需要加载的时候加载，在一般情况下并不加载信息内容。）&lt;/h3&gt;
+&lt;p&gt;　　随着 Javascript框架的流行，越来越多的站点也使用起了框架。不过，一个框架往往包括了很多的功能实现，这些功能并不是每一个页面都需要的，如果下载了不需要的脚本则算得上是一种资源浪费 -既浪费了带宽又浪费了执行花费的时间。&lt;/p&gt;
+
+&lt;p&gt;　　目前的做法大概有两种，一种是为那些流量特别大的页面专门定制一个专用的 mini版框架，另一种则是 Lazy Load。YUI 则使用了第二种方式，在 YUI的实现中，最初只加载核心模块，其他模块可以等到需要使用的时候才加载。&lt;/p&gt;
+
+&lt;h3 id=&quot;5-将-css放在-head中&quot;&gt;5. 将 CSS放在 HEAD中&lt;/h3&gt;
+&lt;p&gt;　　如果将 CSS放在其他地方比如 BODY中，则浏览器有可能还未下载和解析到 CSS就已经开始渲染页面了，这就导致页面由无 CSS状态跳转到 CSS状态，用户体验比较糟糕。除此之外，有些浏览器会在 CSS下载完成后才开始渲染页面，如果 CSS放在靠下的位置则会导致浏览器将渲染时间推迟。&lt;/p&gt;
+
+&lt;h3 id=&quot;6-异步请求-callback就是将一些行为样式提取出来慢慢的加载信息的内容&quot;&gt;6. 异步请求 Callback（就是将一些行为样式提取出来，慢慢的加载信息的内容）&lt;/h3&gt;
+&lt;p&gt;　　在某些页面中可能存在这样一种需求，需要使用 script标签来异步的请求数据。类似：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Javascript:
+      /*Callback 函数*/ 
+      function myCallback(info){ 
+      //do something here 
+      } 
+HTML:
+　　cb返回的内容 :
+      myCallback('Hello world!');
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;像以上这种方式直接在页面上写 &amp;lt;\script&amp;gt;对页面的性能也是有影响的，即增加了页面首次加载的负担，推迟了 DOMLoaded和window.onload 事件的触发时机。如果时效性允许的话，可以考虑在 DOMLoaded事件触发的时候加载，或者使用 setTimeout方式来灵活的控制加载的时机。&lt;/p&gt;
+
+&lt;h3 id=&quot;7-减少不必要的-http跳转&quot;&gt;7. 减少不必要的 HTTP跳转&lt;/h3&gt;
+&lt;p&gt;　　对于以目录形式访问的 HTTP链接，很多人都会忽略链接最后是否带“/”，假如你的服务器对此是区别对待的话，那么你也需要注意，这其中很可能隐藏了 301跳转，增加了多余请求。具体参见下图，其中第一个链接是以无 “/”结尾的方式访问的，于是服务器有了一次跳转。&lt;/p&gt;
+&lt;h3 id=&quot;8-避免重复的资源请求&quot;&gt;8. 避免重复的资源请求&lt;/h3&gt;
+&lt;p&gt;　　这种情况主要是由于疏忽或页面由多个模块拼接而成，然后每个模块中请求了同样的资源时，会导致资源的重复请求&lt;/p&gt;
+
+&lt;h2 id=&quot;二代码级优化&quot;&gt;二、代码级优化&lt;/h2&gt;
+
+&lt;h3 id=&quot;1-javascript&quot;&gt;1. Javascript&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;(1). DOM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　DOM操作应该是脚本中最耗性能的一类操作，例如增加、修改、删除 DOM元素或者对DOM集合进行操作。如果脚本中包含了大量的 DOM操作则需要注意以下几点：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;a. HTML Collection（HTML收集器，返回的是一个数组内容信息）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　在脚本中 document.images、document.forms 、getElementsByTagName()返回的都是 HTMLCollection类型的集合，在平时使用的时候大多将它作为数组来使用，因为它有 length属性，也可以使用索引访问每一个元素。不过在访问性能上则比数组要差很多，原因是这个集合并不是一个静态的结果，它表示的仅仅是一个特定的查询，每次访问该集合时都会重新执行这个查询从而更新查询结果。所谓的 “访问集合” 包括读取集合的 length属性、访问集合中的元素。&lt;/p&gt;
+
+&lt;p&gt;　　因此，当你需要遍历 HTML Collection的时候，尽量将它转为数组后再访问，以提高性能。即使不转换为数组，也请尽可能少的访问它，例如在遍历的时候可以将 length属性、成员保存到局部变量后再使用局部变量。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;b. Reflow &amp;amp; Repaint
+　
+除了上面一点之外，DOM操作还需要考虑浏览器的Reflow和Repaint，因为这些都是需要消耗资源的，具体的可以参加以下文章：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;如何减少浏览器的repaint和reflow?
+Understanding Internet Explorer Rendering Behaviour
+Notes on HTML Reflow&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;(2). 慎用 with&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　with(obj){ p = 1}; 代码块的行为实际上是修改了代码块中的 执行环境 ，将obj放在了其作用域链的最前端，在with代码块中访问非局部变量是都是先从 obj上开始查找，如果没有再依次按作用域链向上查找，因此使用with相当于增加了作用域链长度。而每次查找作用域链都是要消耗时间的，过长的作用域链会导致查找性能下降。&lt;/p&gt;
+
+&lt;p&gt;　　因此，除非你能肯定在 with代码中只访问 obj中的属性，否则慎用 with，替代的可以使用局部变量缓存需要访问的属性。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;(3). 避免使用 eval和 Function&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　每次eval或Function构造函数作用于字符串表示的源代码时，脚本引擎都需要将源代码转换成可执行代码。这是很消耗资源的操作 —— 通常比简单的函数调用慢 100倍以上。&lt;/p&gt;
+
+&lt;p&gt;　　eval 函数效率特别低，由于事先无法知晓传给 eval 的字符串中的内容，eval在其上下文中解释要处理的代码，也就是说编译器无法优化上下文，因此只能有浏览器在运行时解释代码。这对性能影响很大。&lt;/p&gt;
+
+&lt;p&gt;　　Function 构造函数比 eval略好，因为使用此代码不会影响周围代码 ;但其速度仍很慢。&lt;/p&gt;
+
+&lt;p&gt;　　此外，使用 eval和 Function也不利于Javascript 压缩工具执行压缩。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;(4). 减少作用域链查找（这方面设计到一些内容的相关问题）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　前文谈到了作用域链查找问题，这一点在循环中是尤其需要注意的问题。如果在循环中需要访问非本作用域下的变量时请在遍历之前用局部变量缓存该变量，并在遍历结束后再重写那个变量，这一点对全局变量尤其重要，因为全局变量处于作用域链的最顶端，访问时的查找次数是最多的。&lt;/p&gt;
+
+&lt;p&gt;低效率的写法：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 全局变量 
+var globalVar = 1; 
+function myCallback(info){ 
+    for( var i = 100000; i--;){ 
+    //每次访问 globalVar 都需要查找到作用域链最顶端，本例中需要访问 100000 次 
+    globalVar += i; 
+    }
+} 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;更高效的写法：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 全局变量 
+var globalVar = 1; 
+function myCallback(info){ 
+//局部变量缓存全局变量 
+    var localVar = globalVar; 
+        for( var i = 100000; i--;){ 
+        //访问局部变量是最快的 
+        localVar += i; 
+        } 
+    //本例中只需要访问 2次全局变量,在函数中只需要将 globalVar中内容的值赋给localVar 中去
+    globalVar = localVar; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;　　此外，要减少作用域链查找还应该减少闭包的使用。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;(5). 数据访问
+　　Javascript中的数据访问包括直接量 (字符串、正则表达式 )、变量、对象属性以及数组，其中对直接量和局部变量的访问是最快的，对对象属性以及数组的访问需要更大的开销。当出现以下情况时，建议将数据放入局部变量：
+　　a. 对任何对象属性的访问超过 1次
+　　b. 对任何数组成员的访问次数超过 1次
+　　另外，还应当尽可能的减少对对象以及数组深度查找。&lt;/li&gt;
+  &lt;li&gt;(6). 字符串拼接
+　　在 Javascript中使用”+” 号来拼接字符串效率是比较低的，因为每次运行都会开辟新的内存并生成新的字符串变量，然后将拼接结果赋值给新变量。与之相比更为高效的做法是使用数组的 join方法，即将需要拼接的字符串放在数组中最后调用其 join方法得到结果。不过由于使用数组也有一定的开销，因此当需要拼接的字符串较多的时候可以考虑用此方法。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;　　关于 Javascript优化的更详细介绍请参考：
+Write Efficient Javascript(PPT)
+Efficient JavaScript&lt;/p&gt;
+&lt;h3 id=&quot;2-css选择符&quot;&gt;2. CSS选择符&lt;/h3&gt;
+&lt;p&gt;　　在大多数人的观念中，都觉得浏览器对 CSS选择符的解析式从左往右进行的，例如
+#toc A { color: #444; }
+　　这样一个选择符，如果是从右往左解析则效率会很高，因为第一个 ID选择基本上就把查找的范围限定了，但实际上浏览器对选择符的解析是从右往左进行的。如上面的选择符，浏览器必须遍历查找每一个 A标签的祖先节点，效率并不像之前想象的那样高。根据浏览器的这一行为特点，在写选择符的时候需要注意很多事项，有人已经一一列举了， 详情参考此处。&lt;/p&gt;
+
+&lt;h3 id=&quot;3-html&quot;&gt;3. HTML&lt;/h3&gt;
+&lt;p&gt;　　对 HTML本身的优化现如今也越来越多的受人关注了，详情可以参见这篇 总结性文章 。&lt;/p&gt;
+
+&lt;h3 id=&quot;4-image压缩&quot;&gt;4. Image压缩&lt;/h3&gt;
+&lt;p&gt;　　图片压缩是个技术活，不过现如今这方面的工具也非常多，压缩之后往往能带来不错的效果，具体的压缩原理以及方法在《 Even Faster Web Sites》第10 章有很详细的介绍，有兴趣的可以去看看。&lt;/p&gt;
+&lt;h3 id=&quot;总结&quot;&gt;总结&lt;/h3&gt;
+&lt;p&gt;　　本文从页面级以及代码级两个粒度对前端优化的各种方式做了一个总结，这些方法基本上都是前端开发人员在开发的过程中可以借鉴和实践的，除此之外，完整的前端优化还应该包括很多其他的途径，例如 CDN、 Gzip、多域名、无 Cookie服务器等等，由于对于开发人员的可操作性并不强大，在此也就不多叙述了，详细的可以参考 Yahoo和Google 的这些“金科玉律&lt;/p&gt;
+</description>
+        <pubDate>Tue, 09 Aug 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/08/optimize/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/08/optimize/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>移动端开发踩过的坑</title>
+        <description>&lt;h3 id=&quot;图片大小不一处理问题&quot;&gt;图片大小不一，处理问题。&lt;/h3&gt;
+
+&lt;p&gt;根据实际情况，每条新闻的封面图片都是大小，长宽比例不一的，但都要放在相同大小的块中展示，如何保证它们看起来不变形，效果良好的展示。&lt;/p&gt;
+
+&lt;p&gt;这个问题棘手在已有的数据中图片都是大小不一的，最终用以下两种方法缓解：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案一：使用背景图片展示，将图片设置为固定大小的div块的背景，然后设置 &lt;code class=&quot;highlighter-rouge&quot;&gt;background-position:center&lt;/code&gt;，这样可以将图片中间的主要内容展现出来，但缺点是遇到一些像素很高的图片只会展示中间一小部分。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案二：将块固定长宽 &lt;code class=&quot;highlighter-rouge&quot;&gt;overflow:hidden&lt;/code&gt;，然后图片宽度 &lt;code class=&quot;highlighter-rouge&quot;&gt;width:100%，margin-top:-15px&lt;/code&gt;（这个偏移可以根据实际情况而定）。当然这个也只能解决大部分情况，不能解决所有情况。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;超出省略问题&quot;&gt;超出省略问题&lt;/h3&gt;
+
+&lt;p&gt;之前经常用到的是单行文本超出省略，这次是两行文本超出需要省略。&lt;/p&gt;
+
+&lt;p&gt;单行解决方案：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;text-overflow:ellipsis;
+
+overflow:hidden;
+
+white-space:nowrap;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;两行解决方案：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;overflow:hidden;
+
+text-overflow:ellipsis;
+
+display:-webkit-box;
+
+-webkit-line-clamp:2;
+
+-webkit-box-orient:vertical;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;文字显示不全问题&quot;&gt;文字显示不全问题&lt;/h3&gt;
+
+&lt;p&gt;一开始在pc端用谷歌浏览器模拟调试都没有问题，但在手机上运行后出现文字显示不全的问题，&lt;/p&gt;
+
+&lt;p&gt;使用rem设置了块的高度和字体，但rem是相对于根元素去计算字体大小的，并不是所有的设备上根元素的大小都是相同的，由于这些误差导致在一些手机浏览器上出现文字超出显示不全。&lt;/p&gt;
+
+&lt;p&gt;原因：因为Chrome设置了最小字号为12px，导致如果在宽高、行高、边距等地方用rem，虽然在html那设置了10px，但默认还是会按照12px来计算，所以实际会偏大。建议rem只是在字号上用比较好。&lt;/p&gt;
+
+&lt;p&gt;解决方案：首先设置根元素的字体大小。其次将宽高的单位改为px;&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;html{ font-size:10px}  .title{ font-size:2rem;}&lt;/code&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 04 Jun 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/06/mobile/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/06/mobile/</guid>
+        
+        <category>前端分享</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>npm,browser-sync,gulp使用</title>
+        <description>&lt;h3 id=&quot;npm&quot;&gt;npm&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;官网[https://www.npmjs.com]&lt;/li&gt;
+  &lt;li&gt;node package manager&lt;/li&gt;
+  &lt;li&gt;命令:
+    &lt;ul&gt;
+      &lt;li&gt;初始化： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm init&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;安装指定包： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install jquery --save&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;删除指定包： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm remove jquery --save&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;下载安装package.json中dependencies属性对的文件:&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install --production&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;换源：
+        &lt;ul&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm config set registry https://registry.npm.taobao.org&lt;/code&gt;&lt;/li&gt;
+          &lt;li&gt;或者使用cnpm： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install -g cnpm --registry=https://registry.npm.taobao.org&lt;/code&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;browser-sync&quot;&gt;browser-sync&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;更改代码之后自动刷新浏览器&lt;/li&gt;
+  &lt;li&gt;需要使用npm进行全局安装:&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install browser-sync -g&lt;/code&gt;,-g表示安装到全局&lt;/li&gt;
+  &lt;li&gt;使用:&lt;code class=&quot;highlighter-rouge&quot;&gt;browser-sync start --server --files &quot;./index.html,app.css,./css/*.css,*.*&quot; &lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;–files参数指定要监视的文件，后面跟要监视的文件的文件路径以逗号分隔。&lt;/li&gt;
+  &lt;li&gt;cmd数据&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;------------------------------------
+       Local: http://localhost:3000		//访问地址
+    External: http://172.20.10.3:3000
+------------------------------------
+          UI: http://localhost:3001		//后台地址
+ UI External: http://172.20.10.3:3001
+------------------------------------
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;gulp&quot;&gt;gulp&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.gulpjs.com&quot;&gt;官网&lt;/a&gt;
+  &lt;a href=&quot;http://www.gulpjs.com.cn&quot;&gt;中文网&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;前端自动化构建工具
+js压缩,var x,xname，混淆
+合并.
+css压缩
+html压压缩&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;grunt ,webpack…&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;核心就5个方法&quot;&gt;核心就5个方法&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;task,gulp中是一个个任务的形式来实现功能。
+    &lt;ul&gt;
+      &lt;li&gt;task(‘任务名’,function(){
+…..
+});&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;src
+    &lt;ul&gt;
+      &lt;li&gt;src(‘./*.js’)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;dest(‘./minjs/’)// 指定处理后的文件的输出路径.&lt;/li&gt;
+  &lt;li&gt;watch(‘./*.js’,[‘任务名1’,’任务名2’]);&lt;/li&gt;
+  &lt;li&gt;run(‘任务名’);//执行指定的任务.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;gulp的安装&quot;&gt;gulp的安装&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;使用npm 进行安装&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install gulp-cli -g&lt;/code&gt;;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;gulp-使用&quot;&gt;gulp 使用&lt;/h3&gt;
+
+&lt;h4 id=&quot;使用时还需要在项目中通过npm非全局安装gulp&quot;&gt;使用时还需要在项目中通过npm非全局安装gulp&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install gulp --save-dev&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;还需要在当前项目根目录添加一个gulpfilejs文件来写具体的任务代码&quot;&gt;还需要在当前项目根目录添加一个gulpfile.js文件来写具体的任务代码.&lt;/h4&gt;
+
+&lt;h3 id=&quot;gulp的一些插件&quot;&gt;gulp的一些插件&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;也是使用npm安装&lt;/li&gt;
+  &lt;li&gt;对js代码进行压缩 gulp-uglify&lt;/li&gt;
+  &lt;li&gt;对代码进行合并 gulp-concat&lt;/li&gt;
+  &lt;li&gt;对css进行压缩 gulp-cssnano&lt;/li&gt;
+  &lt;li&gt;对html进行压缩 gulp-htmlmin&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 得到gulp对象
+var gulp = require('gulp');
+
+
+// 引入gulp-uglify插件，只是用来压缩，混淆
+var uglify = require('gulp-uglify');
+
+// 合并,即能合并js,也能合并css
+var concat = require('gulp-concat');
+
+
+// 用来对css进行压缩操作的插件
+var cssnano = require('gulp-cssnano');
+
+// 引用gulp-htmlmin对html进行压缩
+var htmlmin = require('gulp-htmlmin');
+
+// 1.新建任务
+gulp.task('script',function(){
+  // 这里写任务具体需要做的事情.
+  // 2.匹配到app.js文件,如果使用多个规则，需要以数组的形式来书写第一个参数，数组中的每一个元素都是一个规则。
+  gulp.src(['./app.js','./signIn.js'])
+  .pipe(concat('all.js'))
+  // 压缩，混淆
+  .pipe(uglify())
+  .pipe(gulp.dest('./dist'))
+  // 输出到指定目录
+});
+
+// 新建对css进行处理的任务.
+gulp.task('style',function(){
+   // 匹配css文件
+   gulp.src(['./style.css','./signIn.css'])
+   .pipe(concat('all.css')) // 需要指定一个名字，作为压缩后文件的文件名
+   .pipe(cssnano())
+   .pipe(gulp.dest('./dist'))
+});
+
+// 压缩html任务
+gulp.task('html',function(){
+  // 匹配html文件
+  gulp.src('./index.html')
+  .pipe(htmlmin({collapseWhitespace:true}))
+  .pipe(gulp.dest('./dist/'));
+});
+
+// 单独创建任务来监视文件变化
+gulp.task('watch',function(){
+  // 监视文件变化，并调用指定任务处理代码
+// 使用多个规则用数组,第二个参数，是想要执行的任务
+ gulp.watch(['./app.js','./signIn.js'],['script']);
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Fri, 20 May 2016 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2016/05/npm/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/05/npm/</guid>
+        
+        <category>前端工具</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

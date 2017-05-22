@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Angular初识（二）</title>
+  <meta name="description" content="Angular VS jQuery">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Angular初识（二）">
+  <meta name="twitter:description" content="Angular VS jQuery">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Angular初识（二）">
+  <meta property="og:description" content="Angular VS jQuery">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/10/Angular2/">
+  <link rel="alternate" type="application/rss+xml" title="Hliang" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?8ba1c6be0953b6f9c2ba38e57f615421";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 Hliang 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                HLiang
+                            
+                        </h2>
+                        <p>
+                           
+                                前端开发
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hliang" class="blog-button">Hliang</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">我说晚了你就不学了吗？</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-slate"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">Angular初识（二）</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2016-10-08 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2016-10-08</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <h3 id="angular-vs-jquery">Angular VS jQuery</h3>
+
+<ul>
+  <li>jQuery:库
+    <ul>
+      <li>封装了一些常用的方法，我们主动调用这些方法</li>
+    </ul>
+  </li>
+  <li>Angular:框架
+    <ul>
+      <li>框架提供了一些结构或者模式，</li>
+      <li>我们按照框架提供的规则去写代码</li>
+      <li>然后由框架自己去执行相应的操作</li>
+    </ul>
+  </li>
+  <li>思想上:
+    <ul>
+      <li>jQuery: 提高了dom操作的开发效率。</li>
+      <li>Angular: 不提倡dom操作，几乎没有dom操作(底层还是操作的dom)
+        <ul>
+          <li>angular中操作dom <code class="highlighter-rouge">angular.element()</code>，叫做jqLite</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="angularelement">angular.element</h3>
+<ul>
+  <li>轻量级的jQuery,</li>
+  <li><em>注意：在获取dom对象时传入的参数是一个原生dom对象</em></li>
+</ul>
+
+<h3 id="复习并总结angular开发流程">复习并总结Angular开发流程</h3>
+
+<p>0.通过 npm/bower/暴力的方式/cdn 拿到想到angular.js文件。</p>
+
+<p>1.在HTML代码中引入angular.js这个文件。</p>
+
+<p>2.在HTML代码上加上ng-app指令，告诉angular来管理我们的代码，这个指令只能使用一次。</p>
+
+<p>3.在JS代码中通过<code class="highlighter-rouge">angular.module('模块名',[])</code>创建一个模块，然后在HTML中的ng-app指令指定一下模块名<code class="highlighter-rouge">'ng-app="模块名"'</code>。</p>
+
+<p>4.在JS代码中创建控制器<code class="highlighter-rouge">xxx.controller('控制器的名字',function(){})</code>,</p>
+
+<p>在HTML代码中通过ng-controller指令由我们当前的控制器来管理数据模型</p>
+
+<p><code class="highlighter-rouge">ng-controller="控制器的名字"</code></p>
+
+<p>5.建模（根据页面原型抽象出数据模型）, 最终得到视图模型(ViewModel)</p>
+
+<p>6.通过<code class="highlighter-rouge">$scope</code>来暴露页面上所需要使用的一些数据</p>
+
+<p>7.在HTML代码中通过<code class="highlighter-rouge">ng-model/ng-click/{ { } }</code> 将刚刚暴露的数据绑定到页面上去</p>
+
+<p>8.在JS中写一些具体业务相关的代码</p>
+
+<h3 id="复习mvc">复习MVC</h3>
+<ul>
+  <li>MVC是一种设计思想,它是约定了程序的结构应该是怎么。</li>
+  <li>每一个组成原件都会有一个明确的职责。</li>
+  <li>提高代码的结构和可维护性(代码的执行效率肯定是不会提高的，10行代码，会分到10个不同的方法。);</li>
+</ul>
+
+<h3 id="scope">$scope</h3>
+
+<ul>
+  <li>视图和控制器之间的数据桥梁</li>
+  <li>用于在视图和控制器之间传递数据</li>
+  <li>用来暴露数据模型（数据，行为）</li>
+</ul>
+
+<p><img src="/images/posts/Angular/scope.png" alt="$scope" /></p>
+
+<h3 id="viewmodel">ViewModel</h3>
+
+<ul>
+  <li>$scope 实际上就是MVVM中所谓的VM（视图模型）</li>
+  <li>正是因为$scope在Angular中大量使用甚至盖过了C（控制器）的概念，所以很多人（包括我）把Angular称之为MVVM框架</li>
+  <li>这一点倒是无所谓，具体看怎么用罢了</li>
+</ul>
+
+<h2 id="模块">模块</h2>
+
+<h3 id="模块的创建">模块的创建</h3>
+<blockquote>
+  <p>通过<code class="highlighter-rouge">anuglar.mdoule()</code>方法来创建模块.</p>
+</blockquote>
+
+<p><em>注意,如果传入两个参数就是去创建模块，如果只传入第一个参数，就会变成获取模块。</em></p>
+
+<h3 id="模块的划分式">模块的划分式</h3>
+
+<h4 id="1根据项目中具体的功能去划分模块">1.根据项目中具体的功能去划分模块</h4>
+
+<h4 id="2根据具体的文件功能的类型去划分模块">2.根据具体的文件功能的类型去划分模块</h4>
+
+<h2 id="控制器的创建方式">控制器的创建方式</h2>
+
+<h3 id="传统的方式创建控制器不推荐使用这种方式">传统的方式创建控制器(不推荐使用这种方式)</h3>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>    <span class="c1">// 通过全局函数来创建控制器</span>
+        <span class="c1">// angular会把我们创建的全局函数作为控制器使用</span>
+        <span class="kd">function</span> <span class="nx">demoController</span><span class="p">(</span><span class="nx">$scope</span><span class="p">){</span>
+            <span class="nx">$scope</span><span class="p">.</span><span class="nx">name</span><span class="o">=</span><span class="s1">'小明'</span><span class="p">;</span>
+        <span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="面向对象的方式创建控制器">面向对象的方式创建控制器</h3>
+
+<div class="language-html highlighter-rouge"><pre class="highlight"><code>    <span class="nt">&lt;div</span> <span class="na">ng-controller=</span><span class="s">"demoController as obj "</span><span class="nt">&gt;</span>
+        
+        
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="c">&lt;!-- 1.引入angular.js文件 --&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"node_modules/angular/angular.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;script&gt;</span>
+        <span class="c1">// 3.创建模块</span>
+        <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'myApp'</span><span class="p">,[]);</span>
+
+        <span class="c1">// 4.创建控制器</span>
+        <span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'demoController'</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">){</span>
+            <span class="c1">// 可以当作构造函数来使用</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="o">=</span><span class="s2">"小明"</span><span class="p">;</span>
+            <span class="nx">$scope</span><span class="p">.</span><span class="nx">age</span><span class="o">=</span><span class="mi">12</span><span class="p">;</span>
+        <span class="p">})</span>
+    <span class="nt">&lt;/script&gt;</span>
+</code></pre>
+</div>
+
+<h3 id="安全的创建控制器的方式">安全的创建控制器的方式</h3>
+<ul>
+  <li>原因：angular在控制器的回调函数中是通过参数名来传递参数的。</li>
+  <li>通过将第二个参数改为数据组：数据的最后一个参数还是原来的fucntion,数据前的参数是我们想要anuglar传递的参数的字符串形式，fucntion里的参数需要与数组前面的元素一对应。
+<code class="highlighter-rouge">app.controller('demoController',['$scope','$log',function($scope,$log){}])</code></li>
+</ul>
+
+<h3 id="依赖注入的原理">依赖注入的原理</h3>
+<ul>
+  <li>核心是toString()</li>
+  <li>获取函数形参的方式</li>
+</ul>
+
+<h3 id="指令">指令</h3>
+
+<ul>
+  <li>在 AngularJS 中将前缀为 ng- 这种属性称之为指令，其作用就是为 DOM 元素调用方法、定义行为绑定数据等</li>
+  <li>
+    <p>简单说：当一个 Angular 应用启动，Angular 就会遍历 DOM 树来解析 HTML，根据指令不同，完成不同操作</p>
+  </li>
+  <li>ng-bind
+    <ul>
+      <li>用来解决表达式闪烁问题</li>
+      <li><code class="highlighter-rouge">&lt;p ng-bind="数据模型"&gt;&lt;/p&gt;</code>
+  <em>注意：只能够在双标签中使用ng-bind指令</em></li>
+    </ul>
+  </li>
+  <li>ng-cloak
+    <ul>
+      <li>用来解决表达式闪烁问题</li>
+      <li><code class="highlighter-rouge">&lt;p class="ng-cloak"&gt;&lt;/p&gt;</code></li>
+      <li>利用angular在加载会移除页面上所以名为ng-cloak的样式名的特性。</li>
+    </ul>
+  </li>
+  <li>ngSanitize模块
+<code class="highlighter-rouge">npm install angular-sanitize</code>
+    <ul>
+      <li>使用的是ng-bind-html指令来渲染数据模型。</li>
+    </ul>
+  </li>
+  <li>ng-repeat
+    <ul>
+      <li>可以用来循环输出数组</li>
+      <li>写在哪个元素上就是循环哪个元素。</li>
+      <li>语法：类似于forin 循环
+        <blockquote>
+          <p><code class="highlighter-rouge">&lt;div ng-repeat="item in data "&gt;&lt;/div&gt;</code></p>
+        </blockquote>
+      </li>
+      <li>track by $index 解决数组中数据有重得的问题
+        <ul>
+          <li><code class="highlighter-rouge">&lt;li ng-repeat="item in tesData track by $index"&gt;&lt;/li&gt;</code></li>
+        </ul>
+      </li>
+      <li>还可以用来渲染key,value对</li>
+      <li>ng-repeat 在遍历里会暴露一些数据模型,
+        <ul>
+          <li>$even:提供了一个布尔值，当为true时表示当前数据是第偶数条数据,从索引0开始计算</li>
+          <li>$odd:提供了一个布尔值，当为true时表示当前数据是第奇数条数据,从索引0开始计算</li>
+          <li>$first,$last ,$middle
+ng-class:</li>
+        </ul>
+      </li>
+      <li>从多种样式中选择一个样式
+        <ul>
+          <li>语法：类似于从一个key,value对象中获取其中一个属性的值</li>
+          <li>ng-class=”{‘A’:’red’,’B’:’blue’,’C’:’green’}”</li>
+        </ul>
+      </li>
+      <li>从多种样式中选择多个
+        <ul>
+          <li>语法：也是写一个key,value对象，这里的key是我们提供的类样式名，value是一个布尔值，为true时对应的key会被作为样式名加入到class中</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>ng-hide/ng-show</p>
+<ul>
+  <li>ng-hide：需要一个布尔值：当为true时为隐藏当前元素</li>
+  <li>ng-show: 需要一个布尔值：当为true时为显示当前元素</li>
+</ul>
+
+<p>ng-if:需要一个布尔值：当为true时为显示当前元素
+                        为false时是删除当前元素</p>
+
+<p>ng-switch:与ng-switch-when同用，类似与js中的switch case</p>
+
+<div class="language-html highlighter-rouge"><pre class="highlight"><code>    <span class="nt">&lt;div</span> <span class="na">ng-switch=</span><span class="s">"name"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">ng-switch-when=</span><span class="s">"小明"</span><span class="nt">&gt;</span>我是小明<span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">ng-switch-when=</span><span class="s">"小红"</span><span class="nt">&gt;</span>我是小红<span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">ng-switch-when=</span><span class="s">"小月"</span><span class="nt">&gt;</span>我是小月<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</code></pre>
+</div>
+
+<h3 id="其他常用指令">其他常用指令</h3>
+
+<ul>
+  <li>ng-checked：
+    <ul>
+      <li>单选/复选是否选中,是单向数据绑定</li>
+    </ul>
+  </li>
+  <li>ng-selected：
+    <ul>
+      <li>是否选中</li>
+    </ul>
+  </li>
+  <li>ng-disabled：
+    <ul>
+      <li>是否禁用</li>
+    </ul>
+  </li>
+  <li>ng-readonly：
+    <ul>
+      <li>是否只读</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="常用事件指令">常用事件指令</h3>
+
+<p>不同于以上的功能性指令，Angular还定义了一些用于和事件绑定的指令：</p>
+
+<ul>
+  <li>ng-blur：失去焦点</li>
+  <li>ng-focus：获得焦点</li>
+  <li>ng-change：改变事件</li>
+  <li>ng-copy：复制事件</li>
+  <li>ng-click： ng-click=”add()”</li>
+  <li>ng-dblclick：双击事件</li>
+  <li>ng-submit： 表单提交事件</li>
+</ul>
+
+<h3 id="指令的标准使用方式">指令的标准使用方式</h3>
+<p>data-xxx,在使用angular指令时，只需要在原先的指令前加上data-前缀。
+x-</p>
+
+
+  </section>
+</article>
+
+<section>
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2016/09/Angular1/" data-toggle="tooltip" data-placement="top" title="Angular初识（一）">上一篇：  <span>Angular初识（一）</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2016/11/Angular3/" data-toggle="tooltip" data-placement="top" title="Angular初识（三）">下一篇：  <span>Angular初识（三）</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div class="ds-thread" data-thread-key="/2016/10/Angular2/" data-title="Angular初识（二）" data-url="http://localhost:4000/2016/10/Angular2/"></div>
+
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"415533780"};
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Weibo -->
+          <li class="navigation__item_social">
+            <a href="http://weibo.com/5975327672" title="@5975327672 的微博" target="_blank">
+              <i class='social fa fa-weibo fa-2x'></i>
+              <span class="label">Weibo</span>
+            </a>
+          </li>
+          
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/feibuli" title="@feibuli 的 Github" target="_blank">
+              <i class='social fa fa-github fa-2x'></i>
+              <span class="label">Github</span>
+            </a>
+          </li>
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+          <!-- Email -->
+          <li class="navigation__item_social">
+            <a href="mailto:415533780@qq.com" title="Contact me">
+              <i class='social fa fa-envelope fa-2x'></i>
+              <span class="label">Email</span>
+            </a>
+          </li>
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+          <p class="copyright text-muted">
+            Copyright &copy; Hliang 2016 - 2017 Theme by <a href="http://baixin.io/">leopardpan</a> & <a href="http://Hliang.xyz/">Hliang</a>|
+            <iframe
+                style="margin-left: 2px; margin-bottom:-5px;"
+                frameborder="0" scrolling="0" width="91px" height="20px"
+                src="https://ghbtns.com/github-btn.html?user=feibuli&repo=feibuli.github.io&type=star&count=true" >
+            </iframe>
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+    
+  </body>
+
+</html>

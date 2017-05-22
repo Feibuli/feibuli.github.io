@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Angular初识（一）</title>
+  <meta name="description" content="开放性讨论">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Angular初识（一）">
+  <meta name="twitter:description" content="开放性讨论">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Angular初识（一）">
+  <meta property="og:description" content="开放性讨论">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/09/Angular1/">
+  <link rel="alternate" type="application/rss+xml" title="Hliang" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?8ba1c6be0953b6f9c2ba38e57f615421";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 Hliang 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                HLiang
+                            
+                        </h2>
+                        <p>
+                           
+                                前端开发
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hliang" class="blog-button">Hliang</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">我说晚了你就不学了吗？</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-slate"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">Angular初识（一）</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2016-09-05 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2016-09-05</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <h3 id="开放性讨论">开放性讨论</h3>
+
+<ul>
+  <li>为什么这几年前端行业好像突然间多了那么多东西
+    <ul>
+      <li>我们现在做的网站不再是简简单单的呈现静态页面，而是一个web应用程序。</li>
+      <li>一大批后端程序员转型为前端，大大提高了前端的水准。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="angular简介">Angular简介</h3>
+<ul>
+  <li>jQuery ：库
+    <ul>
+      <li>封装了一些常用的方法，我们主动的调用这些方法提高了代码的利用，以及代码后期的维护</li>
+    </ul>
+  </li>
+  <li>Angular: 前端框架
+    <ul>
+      <li>框架提供了一些结构或者模式，</li>
+      <li>我们是根据框架提供的结构或者模式去书写代码</li>
+      <li>由框架帮助我们去执行相应的操作。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="什么是-angular">什么是 Angular</h3>
+
+<ul>
+  <li>一款非常优秀的前端高级 JS 框架</li>
+  <li>最早由 Misko Hevery 等人创建</li>
+  <li>2009 年被 Google 公式收购，用于其多款产品</li>
+  <li>目前有一个全职的开发团队继续开发和维护这个库</li>
+  <li>有了这一类框架就可以轻松构建 SPA 应用程序</li>
+  <li>其核心就是通过指令扩展了 HTML，通过表达式绑定数据到 HTML。</li>
+  <li><em>Angular不推崇DOM操作，也就是说在NG中几乎找不到任何的DOM操作</em></li>
+</ul>
+
+<h3 id="什么是-spa">什么是 SPA</h3>
+<ul>
+  <li>single page application</li>
+  <li>单页应用程序</li>
+</ul>
+
+<h3 id="为什么使用-angular">为什么使用 Angular</h3>
+
+<h3 id="安装-angular">安装 Angular</h3>
+
+<ul>
+  <li>
+    <p>暴力安装: 直接从本地硬盘中复制一个angular.js文件到项目中</p>
+  </li>
+  <li>通过工具安装
+    <ul>
+      <li>npm 方式 <code class="highlighter-rouge">npm install angular</code></li>
+      <li>bower 方式 <code class="highlighter-rouge">npm install angular</code></li>
+    </ul>
+  </li>
+  <li>CDN - 扩展内容</li>
+</ul>
+
+<p><em>注意，每一种安装方式，本质都是为了拿到angular.js文件</em></p>
+
+<h3 id="指令">指令</h3>
+<ul>
+  <li>angular中以ng-开头的属性叫作指令</li>
+  <li>ng-app 告诉angular来管理html代码，管理ng-app所在元素及其子元素。</li>
+  <li>
+    <p>ng-click 用来注册点击事件</p>
+
+    <blockquote>
+      <p>var add = document.getElementById(‘add’);
+ add.onclick=function(){
+  val = (val-0)+1; // num.value = (num.value - 0) +1
+ }</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>ng-model：var num = document.getElementById(‘num’).value</p>
+  </li>
+  <li>ng-init :进行初始化操作:  ng-init=”user.name=’小明’”</li>
+</ul>
+
+<h3 id="angular-表达式">Angular 表达式</h3>
+<ul>
+  <li>就是把ng-model对应的值显示到页面中。</li>
+  <li>语法：两个大括号的形式：{{}}</li>
+  <li>{{user.name}}</li>
+  <li>{{‘hello’+ user.name}}</li>
+  <li>{{1+2}}</li>
+  <li>{{[1,2,3,4]}}</li>
+</ul>
+
+<h2 id="angular-基础概念">Angular 基础概念</h2>
+
+<h3 id="angular-的核心特性">Angular 的核心特性</h3>
+
+<ul>
+  <li>
+    <p>指令</p>
+  </li>
+  <li>
+    <p>MVC</p>
+  </li>
+  <li>
+    <p>模块化  angular.module()</p>
+  </li>
+  <li>
+    <p>双向数据绑定</p>
+  </li>
+</ul>
+
+<h3 id="模块module">模块(module)</h3>
+<ul>
+  <li>angular.module(‘myApp’,[])
+    <blockquote>
+      <p>第一个参数是模块的名字
+第二个参数是一个数组，数组的元素是该模块所依赖其他模块的名字
+<em>注意,即使不依赖任何模块，也需要给第二个参数传递一个空数组</em>
+<em>否则angular.module(‘myApp’)就是去获取名为myApp的模块对象</em></p>
+    </blockquote>
+  </li>
+</ul>
+
+<h3 id="控制器controller">控制器(controller)</h3>
+<ul>
+  <li>angular.module(‘myApp’,[]).controller(‘demoController’,function($scope){})
+    <blockquote>
+      <p>第一个参数，是控制器的名字
+第二个参数，是一个回调函数，在回调函数里写我们想要的js代码。</p>
+    </blockquote>
+  </li>
+</ul>
+
+<h3 id="双向数据绑定">双向数据绑定</h3>
+<ul>
+  <li>数据模型的值发生改变，就会导致页面值的改变.
+页面值的改变，就会导致数据模型值的改变，这各种相互影响的关系就是双向数据绑定。</li>
+  <li>ng-model</li>
+</ul>
+
+<h3 id="单向数据绑定">单向数据绑定</h3>
+<ul>
+  <li>使用表达式显示数据模型的值。</li>
+</ul>
+
+<h3 id="mvc-思想">MVC 思想</h3>
+
+<h4 id="什么是-mvc-思想">什么是 MVC 思想</h4>
+<ul>
+  <li>M:Model 模型  :数据存储，一些业务逻辑</li>
+  <li>V:View  视图 ：就是用来展示数据</li>
+  <li>C:Controller 控制器: 调度业务逻辑</li>
+</ul>
+
+<h4 id="mvvm">MVVM</h4>
+<ul>
+  <li>M：</li>
+  <li>V:</li>
+  <li>VM: ViewModel-  $scope</li>
+</ul>
+
+<h3 id="watch">$watch</h3>
+<ul>
+  <li>用于监视数据模型的变化（并且只能监视数据模型的变化）</li>
+  <li>$scope.$watch(‘数据模型名的字符串形式’,function(变化后的值,变化前的值){})</li>
+  <li>$scope.$watch里的回调函数会默认执行一次。</li>
+</ul>
+
+<h2 id="cdn---扩展内容">CDN - 扩展内容</h2>
+<p>content delivery network 
+内容分发网络</p>
+
+<ul>
+  <li>速度快</li>
+  <li>减轻了服务器自身在带宽压力。</li>
+</ul>
+
+<h3 id="相关链接">相关链接</h3>
+
+<ul>
+  <li>AngularJS 1.x 官方网站
+    <ul>
+      <li>https://angularjs.org/</li>
+    </ul>
+  </li>
+  <li>AngularJS 2.x 官方网站
+    <ul>
+      <li>https://angular.io/</li>
+    </ul>
+  </li>
+  <li>Google Material Design for Angular
+    <ul>
+      <li>https://material.angularjs.org</li>
+    </ul>
+  </li>
+  <li>Angular UI（Angular最大的第三方社区）
+    <ul>
+      <li>http://angular-ui.github.io/</li>
+    </ul>
+  </li>
+  <li>AngularJS中文社区
+    <ul>
+      <li>http://www.angularjs.cn/</li>
+    </ul>
+  </li>
+  <li>AngularJS中文社区提供的文档（不用翻墙）
+    <ul>
+      <li>http://docs.angularjs.cn/api</li>
+      <li>http://www.apjs.net/</li>
+    </ul>
+  </li>
+</ul>
+
+
+  </section>
+</article>
+
+<section>
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2016/08/optimize/" data-toggle="tooltip" data-placement="top" title="前端性能优化">上一篇：  <span>前端性能优化</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2016/10/Angular2/" data-toggle="tooltip" data-placement="top" title="Angular初识（二）">下一篇：  <span>Angular初识（二）</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div class="ds-thread" data-thread-key="/2016/09/Angular1/" data-title="Angular初识（一）" data-url="http://localhost:4000/2016/09/Angular1/"></div>
+
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"415533780"};
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Weibo -->
+          <li class="navigation__item_social">
+            <a href="http://weibo.com/5975327672" title="@5975327672 的微博" target="_blank">
+              <i class='social fa fa-weibo fa-2x'></i>
+              <span class="label">Weibo</span>
+            </a>
+          </li>
+          
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/feibuli" title="@feibuli 的 Github" target="_blank">
+              <i class='social fa fa-github fa-2x'></i>
+              <span class="label">Github</span>
+            </a>
+          </li>
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+          <!-- Email -->
+          <li class="navigation__item_social">
+            <a href="mailto:415533780@qq.com" title="Contact me">
+              <i class='social fa fa-envelope fa-2x'></i>
+              <span class="label">Email</span>
+            </a>
+          </li>
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+          <p class="copyright text-muted">
+            Copyright &copy; Hliang 2016 - 2017 Theme by <a href="http://baixin.io/">leopardpan</a> & <a href="http://Hliang.xyz/">Hliang</a>|
+            <iframe
+                style="margin-left: 2px; margin-bottom:-5px;"
+                frameborder="0" scrolling="0" width="91px" height="20px"
+                src="https://ghbtns.com/github-btn.html?user=feibuli&repo=feibuli.github.io&type=star&count=true" >
+            </iframe>
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+    
+  </body>
+
+</html>

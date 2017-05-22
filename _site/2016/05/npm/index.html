@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>npm,browser-sync,gulp使用</title>
+  <meta name="description" content="npm  官网[https://www.npmjs.com]  node package manager  命令:          初始化： npm init      安装指定包： npm install jquery --save      删除指定包： npm remove jquery --save  ...">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="npm,browser-sync,gulp使用">
+  <meta name="twitter:description" content="npm  官网[https://www.npmjs.com]  node package manager  命令:          初始化： npm init      安装指定包： npm install jquery --save      删除指定包： npm remove jquery --save  ...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="npm,browser-sync,gulp使用">
+  <meta property="og:description" content="npm  官网[https://www.npmjs.com]  node package manager  命令:          初始化： npm init      安装指定包： npm install jquery --save      删除指定包： npm remove jquery --save  ...">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/05/npm/">
+  <link rel="alternate" type="application/rss+xml" title="Hliang" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?8ba1c6be0953b6f9c2ba38e57f615421";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 Hliang 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                HLiang
+                            
+                        </h2>
+                        <p>
+                           
+                                前端开发
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hliang" class="blog-button">Hliang</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">我说晚了你就不学了吗？</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-slate"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">npm,browser-sync,gulp使用</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2016-05-20 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2016-05-20</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <h3 id="npm">npm</h3>
+<ul>
+  <li>官网[https://www.npmjs.com]</li>
+  <li>node package manager</li>
+  <li>命令:
+    <ul>
+      <li>初始化： <code class="highlighter-rouge">npm init</code></li>
+      <li>安装指定包： <code class="highlighter-rouge">npm install jquery --save</code></li>
+      <li>删除指定包： <code class="highlighter-rouge">npm remove jquery --save</code></li>
+      <li>下载安装package.json中dependencies属性对的文件:<code class="highlighter-rouge">npm install --production</code></li>
+      <li>换源：
+        <ul>
+          <li><code class="highlighter-rouge">npm config set registry https://registry.npm.taobao.org</code></li>
+          <li>或者使用cnpm： <code class="highlighter-rouge">npm install -g cnpm --registry=https://registry.npm.taobao.org</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="browser-sync">browser-sync</h3>
+<ul>
+  <li>更改代码之后自动刷新浏览器</li>
+  <li>需要使用npm进行全局安装:<code class="highlighter-rouge">npm install browser-sync -g</code>,-g表示安装到全局</li>
+  <li>使用:<code class="highlighter-rouge">browser-sync start --server --files "./index.html,app.css,./css/*.css,*.*" </code></li>
+  <li>–files参数指定要监视的文件，后面跟要监视的文件的文件路径以逗号分隔。</li>
+  <li>cmd数据</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>------------------------------------
+       Local: http://localhost:3000		//访问地址
+    External: http://172.20.10.3:3000
+------------------------------------
+          UI: http://localhost:3001		//后台地址
+ UI External: http://172.20.10.3:3001
+------------------------------------
+</code></pre>
+</div>
+
+<h3 id="gulp">gulp</h3>
+<p><a href="http://www.gulpjs.com">官网</a>
+  <a href="http://www.gulpjs.com.cn">中文网</a></p>
+
+<ul>
+  <li>
+    <p>前端自动化构建工具
+js压缩,var x,xname，混淆
+合并.
+css压缩
+html压压缩</p>
+  </li>
+  <li>
+    <p>grunt ,webpack…</p>
+  </li>
+</ul>
+
+<h3 id="核心就5个方法">核心就5个方法</h3>
+<ul>
+  <li>task,gulp中是一个个任务的形式来实现功能。
+    <ul>
+      <li>task(‘任务名’,function(){
+…..
+});</li>
+    </ul>
+  </li>
+  <li>src
+    <ul>
+      <li>src(‘./*.js’)</li>
+    </ul>
+  </li>
+  <li>dest(‘./minjs/’)// 指定处理后的文件的输出路径.</li>
+  <li>watch(‘./*.js’,[‘任务名1’,’任务名2’]);</li>
+  <li>run(‘任务名’);//执行指定的任务.</li>
+</ul>
+
+<h3 id="gulp的安装">gulp的安装</h3>
+<ul>
+  <li>使用npm 进行安装</li>
+  <li><code class="highlighter-rouge">npm install gulp-cli -g</code>;</li>
+</ul>
+
+<h3 id="gulp-使用">gulp 使用</h3>
+
+<h4 id="使用时还需要在项目中通过npm非全局安装gulp">使用时还需要在项目中通过npm非全局安装gulp</h4>
+<ul>
+  <li><code class="highlighter-rouge">npm install gulp --save-dev</code></li>
+</ul>
+
+<h4 id="还需要在当前项目根目录添加一个gulpfilejs文件来写具体的任务代码">还需要在当前项目根目录添加一个gulpfile.js文件来写具体的任务代码.</h4>
+
+<h3 id="gulp的一些插件">gulp的一些插件</h3>
+<ul>
+  <li>也是使用npm安装</li>
+  <li>对js代码进行压缩 gulp-uglify</li>
+  <li>对代码进行合并 gulp-concat</li>
+  <li>对css进行压缩 gulp-cssnano</li>
+  <li>对html进行压缩 gulp-htmlmin</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// 得到gulp对象
+var gulp = require('gulp');
+
+
+// 引入gulp-uglify插件，只是用来压缩，混淆
+var uglify = require('gulp-uglify');
+
+// 合并,即能合并js,也能合并css
+var concat = require('gulp-concat');
+
+
+// 用来对css进行压缩操作的插件
+var cssnano = require('gulp-cssnano');
+
+// 引用gulp-htmlmin对html进行压缩
+var htmlmin = require('gulp-htmlmin');
+
+// 1.新建任务
+gulp.task('script',function(){
+  // 这里写任务具体需要做的事情.
+  // 2.匹配到app.js文件,如果使用多个规则，需要以数组的形式来书写第一个参数，数组中的每一个元素都是一个规则。
+  gulp.src(['./app.js','./signIn.js'])
+  .pipe(concat('all.js'))
+  // 压缩，混淆
+  .pipe(uglify())
+  .pipe(gulp.dest('./dist'))
+  // 输出到指定目录
+});
+
+// 新建对css进行处理的任务.
+gulp.task('style',function(){
+   // 匹配css文件
+   gulp.src(['./style.css','./signIn.css'])
+   .pipe(concat('all.css')) // 需要指定一个名字，作为压缩后文件的文件名
+   .pipe(cssnano())
+   .pipe(gulp.dest('./dist'))
+});
+
+// 压缩html任务
+gulp.task('html',function(){
+  // 匹配html文件
+  gulp.src('./index.html')
+  .pipe(htmlmin({collapseWhitespace:true}))
+  .pipe(gulp.dest('./dist/'));
+});
+
+// 单独创建任务来监视文件变化
+gulp.task('watch',function(){
+  // 监视文件变化，并调用指定任务处理代码
+// 使用多个规则用数组,第二个参数，是想要执行的任务
+ gulp.watch(['./app.js','./signIn.js'],['script']);
+})
+</code></pre>
+</div>
+
+
+  </section>
+</article>
+
+<section>
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2016/03/call/" data-toggle="tooltip" data-placement="top" title="JavaScript中call与apply的使用及区别">上一篇：  <span>JavaScript中call与apply的使用及区别</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2016/06/mobile/" data-toggle="tooltip" data-placement="top" title="移动端开发踩过的坑">下一篇：  <span>移动端开发踩过的坑</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div class="ds-thread" data-thread-key="/2016/05/npm/" data-title="npm,browser-sync,gulp使用" data-url="http://localhost:4000/2016/05/npm/"></div>
+
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"415533780"};
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Weibo -->
+          <li class="navigation__item_social">
+            <a href="http://weibo.com/5975327672" title="@5975327672 的微博" target="_blank">
+              <i class='social fa fa-weibo fa-2x'></i>
+              <span class="label">Weibo</span>
+            </a>
+          </li>
+          
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/feibuli" title="@feibuli 的 Github" target="_blank">
+              <i class='social fa fa-github fa-2x'></i>
+              <span class="label">Github</span>
+            </a>
+          </li>
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+          <!-- Email -->
+          <li class="navigation__item_social">
+            <a href="mailto:415533780@qq.com" title="Contact me">
+              <i class='social fa fa-envelope fa-2x'></i>
+              <span class="label">Email</span>
+            </a>
+          </li>
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+          <p class="copyright text-muted">
+            Copyright &copy; Hliang 2016 - 2017 Theme by <a href="http://baixin.io/">leopardpan</a> & <a href="http://Hliang.xyz/">Hliang</a>|
+            <iframe
+                style="margin-left: 2px; margin-bottom:-5px;"
+                frameborder="0" scrolling="0" width="91px" height="20px"
+                src="https://ghbtns.com/github-btn.html?user=feibuli&repo=feibuli.github.io&type=star&count=true" >
+            </iframe>
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+    
+  </body>
+
+</html>

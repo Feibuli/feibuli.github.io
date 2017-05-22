@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>git常用指令</title>
+  <meta name="description" content="什么是Git?  Git是一款源代码管理工具(版本控制工具)          我们写的代码需要使用Git进行管理。1.0是稳定2.0加了新功能        源代码有必要管理起吗？  有必要，因为人工的去处理不同的版本，做相应备份会很麻烦。  svn,vss,vcs,tfs…..  -Git是linux之父当年...">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="git常用指令">
+  <meta name="twitter:description" content="什么是Git?  Git是一款源代码管理工具(版本控制工具)          我们写的代码需要使用Git进行管理。1.0是稳定2.0加了新功能        源代码有必要管理起吗？  有必要，因为人工的去处理不同的版本，做相应备份会很麻烦。  svn,vss,vcs,tfs…..  -Git是linux之父当年...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="git常用指令">
+  <meta property="og:description" content="什么是Git?  Git是一款源代码管理工具(版本控制工具)          我们写的代码需要使用Git进行管理。1.0是稳定2.0加了新功能        源代码有必要管理起吗？  有必要，因为人工的去处理不同的版本，做相应备份会很麻烦。  svn,vss,vcs,tfs…..  -Git是linux之父当年...">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/01/git/">
+  <link rel="alternate" type="application/rss+xml" title="Hliang" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?8ba1c6be0953b6f9c2ba38e57f615421";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 Hliang 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                HLiang
+                            
+                        </h2>
+                        <p>
+                           
+                                前端开发
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hliang" class="blog-button">Hliang</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">我说晚了你就不学了吗？</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-slate"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">git常用指令</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2016-01-18 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2016-01-18</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <h3 id="什么是git">什么是Git?</h3>
+<ul>
+  <li>Git是一款源代码管理工具(版本控制工具)
+    <ul>
+      <li>我们写的代码需要使用Git进行管理。
+1.0是稳定
+2.0加了新功能</li>
+    </ul>
+  </li>
+  <li>源代码有必要管理起吗？</li>
+  <li>有必要，因为人工的去处理不同的版本，做相应备份会很麻烦。</li>
+  <li>svn,vss,vcs,tfs…..
+  -Git是linux之父当年为了维护linux—linus之前也是手动维护合并把文件发给Linus</li>
+  <li>BitKeeper(收费)</li>
+  <li>有人想破解(不给提供免费使用)</li>
+  <li>linus自己写了一个版本管理的工具（Git）</li>
+</ul>
+
+<h3 id="分布式版本管理工具集中式">分布式版本管理工具，集中式</h3>
+<ul>
+  <li>git属于分布式</li>
+  <li>svn集中式</li>
+</ul>
+
+<h2 id="常用git指令">常用git指令</h2>
+
+<h3 id="git初始化一个仓库">git初始化一个仓库</h3>
+<ul>
+  <li>其实就是创建了一个.git隐藏目录</li>
+  <li>命令:<code class="highlighter-rouge"> git init </code>;
+    <ul>
+      <li>想在哪个目录创建.git目录，就是哪个目录打开工具然后写命令.</li>
+      <li>一般是在项目的根目录执行这个命令.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="自报家门">自报家门</h3>
+<ul>
+  <li>配置用户名 : <code class="highlighter-rouge">git config user.name "testName"</code></li>
+  <li>配置邮箱   : <code class="highlighter-rouge">git config user.email "test@sina.com"</code></li>
+  <li>查看配置信息: <code class="highlighter-rouge">git config --list</code></li>
+</ul>
+
+<h3 id="把代码提交到仓库中">把代码提交到仓库中</h3>
+<ul>
+  <li>1.先把代码添加到暂存区(就相当于放到仓库门口)
+    <ul>
+      <li>命令:<code class="highlighter-rouge">git add 文件路径</code></li>
+      <li>示例:<code class="highlighter-rouge">git add ./reademe.md</code></li>
+      <li>可以使用<code class="highlighter-rouge">git add .</code>这个命令，批量把当前目录下所有修改过的文件添加到暂存区。</li>
+    </ul>
+  </li>
+  <li>2.把暂存区的文件提交仓库里
+    <ul>
+      <li>命令: <code class="highlighter-rouge">git commit -m "注释" </code></li>
+      <li>示例: <code class="highlighter-rouge">git commit -m "我们添加了一个新的功能"</code></li>
+      <li>-m 表示指定一个字符串，作为提交的说明(相当于注释);</li>
+    </ul>
+  </li>
+  <li>合并add 与commit 命令
+    <ul>
+      <li><code class="highlighter-rouge">git commit -a -m "这是使用合并添加与提交的操作"</code>;</li>
+      <li>这里-a参数表明把所有修改后的文件一起添加到暂存区.(只是对修改后的文件有效，对于新添加的文件没有作用)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="查看工作区状态">查看工作区状态</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git status</code></li>
+</ul>
+
+<h3 id="添加忽略文件">添加忽略文件</h3>
+<ul>
+  <li>在项目中有一些文件是不需要提交的,我们需要把它忽略掉</li>
+  <li>需要在.git文件夹所在目录新建一个名为.gitignore的文件
+然后在这个文件中写上需要被忽略的文件的路径。
+示例: /css/a.css
+    : /css/*.css
+    : /a.html</li>
+</ul>
+
+<h3 id="比对文件差异">比对文件差异</h3>
+<ul>
+  <li>命令: <code class="highlighter-rouge">git diff</code>
+    <ul>
+      <li>用来比较暂存区文件内容与工作区文件内容的区别</li>
+      <li>如果暂存区没有文件，就会将工作与代码与最近一次提交对比</li>
+    </ul>
+  </li>
+  <li>命令：<code class="highlighter-rouge">git diff --cached</code>  比较暂存区的文件和仓库中文件的区别</li>
+  <li>对比之前某两次提交的文件的差异
+    <ul>
+      <li>命令:<code class="highlighter-rouge">git diff [版本号1] [版本号2] [想比较的文件路径]</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="查看日志">查看日志</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git log</code>,可以查看每一次提交的日志</li>
+  <li>命令:<code class="highlighter-rouge">git log --oneline</code> 表示使用简洁的形式输出提交日志</li>
+</ul>
+
+<h3 id="版本回退">版本回退</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git reset --hard Head~1</code>
+    <ul>
+      <li>这是将代码回退到上上一次提交时的状态</li>
+    </ul>
+  </li>
+  <li>命令:<code class="highlighter-rouge">git reset --hard Head~2</code>
+    <ul>
+      <li>回退到上上上次</li>
+    </ul>
+  </li>
+  <li>命令:<code class="highlighter-rouge">git reset --hard Head~0</code>
+    <ul>
+      <li>回退到上次提交时的状态,~0可以省略</li>
+    </ul>
+  </li>
+  <li>命令:<code class="highlighter-rouge">git reset --hard 版本号</code>
+    <ul>
+      <li>通过每次提交时生成的版本号来回退版本</li>
+    </ul>
+  </li>
+  <li>通过<code class="highlighter-rouge">git reflog</code>命令可以查看之前所有版本切换的操作记录，可以通过这个命令得到的版本号回退到指定的版本。</li>
+</ul>
+
+<h3 id="创建分支">创建分支</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git branch [分支名]</code>
+    <ul>
+      <li>创建一个新分支</li>
+    </ul>
+  </li>
+  <li>命令:<code class="highlighter-rouge">git branch</code>
+    <ul>
+      <li>查看当前所有的分支</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="切换分支">切换分支</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git checkout [分支名]</code>
+    <ul>
+      <li>切换分支后可以在切换后的分支中进行正常的操作</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="创建并切换分支">创建并切换分支</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git checkout -b [分支名]</code>
+    <ul>
+      <li>创建并切换分支后可以在切换后的分支中进行正常的操作</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="合并分支">合并分支</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git merge [分支名]</code>
+    <ul>
+      <li>git会将指定的分支合并到当前分支.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="删除分支">删除分支</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git branch -d [分支名]</code>
+    <ul>
+      <li>删除指定分支，-d参数表示要执行删除操作</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="git提交中的冲突">git提交中的冲突</h3>
+<ul>
+  <li>如果git不能自动合并分支，就会有冲突，我们需要手动解决冲突，然后再次提交</li>
+</ul>
+
+<h2 id="github">github</h2>
+<h3 id="github与git">github与git</h3>
+<ul>
+  <li>git 版本管理工具</li>
+  <li>github 就是一个网站，只是这个网站提供git服务器的功能</li>
+</ul>
+
+<h3 id="上传代码到git服务器push">上传代码到git服务器(push)</h3>
+<ul>
+  <li>命令:<code class="highlighter-rouge">git push [远程服务器地址] [远程服务器的分支]</code>
+    <ul>
+      <li>示例:<code class="highlighter-rouge">git push https://github.com/huoqishi/test002.git master</code></li>
+    </ul>
+  </li>
+  <li>上传时可以使用一些简化的命令
+    <ul>
+      <li>将远程服务器地址写成变量的形式
+        <ul>
+          <li><code class="highlighter-rouge">git remote add [变量名]  [远程服务器地址]</code></li>
+          <li>示例:<code class="highlighter-rouge">git remote add origin https://github.com/huoqishi/test002.git</code></li>
+          <li>这样之后就可以直接使用origin来代替git push 后面写的地址了
+<code class="highlighter-rouge">git push origin master</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>还可以尽一步简化
+    <ul>
+      <li>在push时加上-u参数，就会默认建立本地当前分支与远程指定分支的关联,下一次push时就不需要输入分支名了<code class="highlighter-rouge">git push origin</code>;</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="git使用ssh方式上传代码与github">git使用ssh方式上传代码与github</h3>
+<ul>
+  <li>git生成公钥和私钥
+    <ul>
+      <li>命令:<code class="highlighter-rouge">ssh-keygen -t rsa</code>生成的公钥与私钥文件会在当用户目录的.ssh目录下.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="把代码push到服务器时需要先pull一下">把代码push到服务器时需要先pull一下</h3>
+<ul>
+  <li>在pull之后如果远程的代码与本地的代码有冲突，git会先自动合并冲突，如果不能自动合并，就必需我们手动去处理冲突。</li>
+</ul>
+
+<h3 id="从服务器上pull代码到本地">从服务器上pull代码到本地</h3>
+<ul>
+  <li>如果本地没有.git目录，需要先初始化一下。</li>
+  <li>命令:<code class="highlighter-rouge">git pull [远程服务器地址] [远程的分支]</code></li>
+</ul>
+
+<h3 id="gh-pages分支-搭建博客">gh-pages分支-搭建博客.</h3>
+<ul>
+  <li>需要把自已博客的网页代码上传到github上的gh-pages分支</li>
+  <li>然后就直接访问了
+    <ul>
+      <li>访问的url形式: [github用户名].github.io/[仓库的名字]/[具体的页面]</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="图形化界面">图形化界面</h3>
+<ul>
+  <li>tortoiseGit</li>
+</ul>
+
+
+  </section>
+</article>
+
+<section>
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2015/12/middle/" data-toggle="tooltip" data-placement="top" title="常见水平垂直居中方法">上一篇：  <span>常见水平垂直居中方法</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2016/02/sass/" data-toggle="tooltip" data-placement="top" title="Sass学习笔记">下一篇：  <span>Sass学习笔记</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div class="ds-thread" data-thread-key="/2016/01/git/" data-title="git常用指令" data-url="http://localhost:4000/2016/01/git/"></div>
+
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"415533780"};
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Weibo -->
+          <li class="navigation__item_social">
+            <a href="http://weibo.com/5975327672" title="@5975327672 的微博" target="_blank">
+              <i class='social fa fa-weibo fa-2x'></i>
+              <span class="label">Weibo</span>
+            </a>
+          </li>
+          
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/feibuli" title="@feibuli 的 Github" target="_blank">
+              <i class='social fa fa-github fa-2x'></i>
+              <span class="label">Github</span>
+            </a>
+          </li>
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+          <!-- Email -->
+          <li class="navigation__item_social">
+            <a href="mailto:415533780@qq.com" title="Contact me">
+              <i class='social fa fa-envelope fa-2x'></i>
+              <span class="label">Email</span>
+            </a>
+          </li>
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+          <p class="copyright text-muted">
+            Copyright &copy; Hliang 2016 - 2017 Theme by <a href="http://baixin.io/">leopardpan</a> & <a href="http://Hliang.xyz/">Hliang</a>|
+            <iframe
+                style="margin-left: 2px; margin-bottom:-5px;"
+                frameborder="0" scrolling="0" width="91px" height="20px"
+                src="https://ghbtns.com/github-btn.html?user=feibuli&repo=feibuli.github.io&type=star&count=true" >
+            </iframe>
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+    
+  </body>
+
+</html>

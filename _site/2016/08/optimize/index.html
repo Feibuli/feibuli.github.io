@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>前端性能优化</title>
+  <meta name="description" content="作者：斯迪   链接">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="前端性能优化">
+  <meta name="twitter:description" content="作者：斯迪   链接">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="前端性能优化">
+  <meta property="og:description" content="作者：斯迪   链接">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/08/optimize/">
+  <link rel="alternate" type="application/rss+xml" title="Hliang" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?8ba1c6be0953b6f9c2ba38e57f615421";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 Hliang 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                HLiang
+                            
+                        </h2>
+                        <p>
+                           
+                                前端开发
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hliang" class="blog-button">Hliang</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">我说晚了你就不学了吗？</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-slate"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">前端性能优化</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2016-08-09 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2016-08-09</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <p>作者：斯迪   <a href="https://www.zhihu.com/question/21658448/answer/18903129">链接</a></p>
+
+<h3 id="前言">前言</h3>
+<p>前端是庞大的，包括 HTML、 CSS、 Javascript、Image 、Flash等等各种各样的资源。</p>
+
+<p>前端优化是复杂的，针对方方面面的资源都有不同的方式。那么，前端优化的目的是什么 ?</p>
+
+<ol>
+  <li>
+    <p>从用户角度而言，优化能够让页面加载得更快、对用户的操作响应得更及时，能够给用户提供更为友好的体验。</p>
+  </li>
+  <li>
+    <p>从服务商角度而言，优化能够减少页面请求数、或者减小请求所占带宽，能够节省可观的资源。</p>
+  </li>
+</ol>
+
+<p>总之，恰当的优化不仅能够改善站点的用户体验并且能够节省相当的资源利用。</p>
+
+<h3 id="论点">论点</h3>
+
+<p>前端优化的途径有很多，按粒度大致可以分为两类：</p>
+
+<ul>
+  <li>
+    <p>第一类是页面级别的优化，例如 HTTP请求数、脚本的无阻塞加载、内联脚本的位置优化等;</p>
+  </li>
+  <li>
+    <p>第二类则是代码级别的优化，例如 Javascript中的DOM 操作优化、CSS选择符优化、图片优化以及 
+HTML结构优化等等。</p>
+  </li>
+</ul>
+
+<p>另外，本着提高投入产出比的目的，后文提到的各种优化策略大致按照投入产出比从大到小的顺序排列。
+　　</p>
+<h2 id="一页面级优化">一、页面级优化</h2>
+
+<h3 id="1-减少http请求数">1. 减少HTTP请求数。</h3>
+
+<p>　　这条策略基本上所有前端人都知道，而且也是最重要最有效的。都说要减少 HTTP请求，那请求多了到底会怎么样呢 ?首先，每个请求都是有成本的，既包含时间成本也包含资源成本。一个完整的请求都需要经过DNS寻址、与服务器建立连接、发送数据、等待服务器响应、接收数据这样一个 “漫长” 而复杂的过程。</p>
+
+<p>　　时间成本就是用户需要看到或者 “感受” 到这个资源是必须要等待这个过程结束的，资源上由于每个请求都需要携带数据，因此每个请求都需要占用带宽。另外，由于浏览器进行并发请求的请求数是有上限的，因此请求数多了以后，浏览器需要分批进行请求，因此会增加用户的等待时间，会给用户造成站点速度慢这样一个印象，即使可能用户能看到的第一屏的资源都已经请求完了，但是浏览器的进度条会一直存在。</p>
+
+<ul>
+  <li>减少 HTTP请求数的主要途径包括：
+    <ul>
+      <li>
+        <p>(1). 从设计实现层面简化页面。</p>
+
+        <p>如果你的页面像百度首页一样简单，那么接下来的规则基本上都用不着了。保持页面简洁、减少资源的使用时最直接的。如果不是这样，你的页面需要华丽的皮肤，则继续阅读下面的内容。</p>
+      </li>
+      <li>
+        <p>(2). 合理设置 HTTP缓存。</p>
+
+        <p>缓存的力量是强大的，恰当的缓存设置可以大大的减少 HTTP请求。以某首页为例，当浏览器没有缓存的时候访问一共会发出78个请求，共600多K数据，而当第二次访问即浏览器已缓存之后访问则仅有10个请求，共20多K数据（这里需要说明的是，如果直接 F5刷新页面的话效果是不一样的，这种情况下请求数还是一样，不过被缓存资源的请求服务器是 304响应，只有 Header没有Body ，可以节省带宽）。</p>
+
+        <p>怎样才算合理设置 ?原则很简单，能缓存越多越好，能缓存越久越好。例如，很少变化的图片资源可以直接通过 HTTP Header中的Expires设置一个很长的过期头;变化不频繁而又可能会变的资源可以使用 Last-Modifed来做请求验证。尽可能的让资源能够在缓存中待得更久。</p>
+      </li>
+      <li>
+        <p>(3). 资源合并与压缩。</p>
+
+        <p>如果可以的话，尽可能的将外部的脚本、样式进行合并，多个合为一个。另外CSS、Javascript、Image 都可以用相应的工具进行压缩，压缩后往往能省下不少空间。</p>
+      </li>
+      <li>
+        <p>(4). CSS Sprites。</p>
+
+        <p>合并 CSS图片，减少请求数的又一个好办法。</p>
+      </li>
+      <li>
+        <p>(5). Inline Images。</p>
+
+        <p>使用 data: URL scheme的方式将图片嵌入到页面或 CSS中，如果不考虑资源管理上的问题的话，不失为一个好办法。如果是嵌入页面的话换来的是增大了页面的体积，而且无法利用浏览器缓存。使用在 CSS中的图片则更为理想一些。</p>
+      </li>
+      <li>
+        <p>(6). Lazy Load Images（自己对这一块的内容还是不了解）。</p>
+
+        <p>这条策略实际上并不一定能减少 HTTP请求数，但是却能在某些条件下或者页面刚加载时减少 HTTP请求数。对于图片而言，在页面刚加载的时候可以只加载第一屏，当用户继续往后滚屏的时候才加载后续的图片。这样一来，假如用户只对第一屏的内容感兴趣时，那剩余的图片请求就都节省了。某首页曾经的做法是在加载的时候把第一屏之后的图片地址缓存在 Textarea标签中，待用户往下滚屏的时候才 “惰性” 加载。</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-将外部脚本置底将脚本内容在页面信息内容加载后再加载">2. 将外部脚本置底（将脚本内容在页面信息内容加载后再加载）</h3>
+
+<p>　　前文有谈到，浏览器是可以并发请求的，这一特点使得其能够更快的加载资源，然而外链脚本在加载时却会阻塞其他资源，例如在脚本加载完成之前，它后面的图片、样式以及其他脚本都处于阻塞状态，直到脚本加载完成后才会开始加载。</p>
+
+<p>　　如果将脚本放在比较靠前的位置，则会影响整个页面的加载速度从而影响用户体验。解决这一问题的方法有很多，在 这里有比较详细的介绍 (这里是译文和 更详细的例子 )，而最简单可依赖的方法就是将脚本尽可能的往后挪，减少对并发下载的影响。</p>
+
+<h3 id="3-异步执行-inline脚本其实原理和上面是一样保证脚本在页面内容后面加载">3. 异步执行 inline脚本(其实原理和上面是一样，保证脚本在页面内容后面加载。)</h3>
+<p>　　inline脚本对性能的影响与外部脚本相比，是有过之而无不及。首页，与外部脚本一样， inline脚本在执行的时候一样会阻塞并发请求，除此之外，由于浏览器在页面处理方面是单线程的，当 inline脚本在页面渲染之前执行时，页面的渲染工作则会被推迟。</p>
+
+<p>　　简而言之， inline脚本在执行的时候，页面处于空白状态。鉴于以上两点原因，建议将执行时间较长的 inline脚本异步执行，异步的方式有很多种，例如使用 script元素的defer 属性(存在兼容性问题和其他一些问题，例如不能使用 document.write)、使用setTimeout ，此外，在HTML5中引入了 Web Workers的机制，恰恰可以解决此类问题。</p>
+
+<h3 id="4-lazy-load-javascript只有在需要加载的时候加载在一般情况下并不加载信息内容">4. Lazy Load Javascript（只有在需要加载的时候加载，在一般情况下并不加载信息内容。）</h3>
+<p>　　随着 Javascript框架的流行，越来越多的站点也使用起了框架。不过，一个框架往往包括了很多的功能实现，这些功能并不是每一个页面都需要的，如果下载了不需要的脚本则算得上是一种资源浪费 -既浪费了带宽又浪费了执行花费的时间。</p>
+
+<p>　　目前的做法大概有两种，一种是为那些流量特别大的页面专门定制一个专用的 mini版框架，另一种则是 Lazy Load。YUI 则使用了第二种方式，在 YUI的实现中，最初只加载核心模块，其他模块可以等到需要使用的时候才加载。</p>
+
+<h3 id="5-将-css放在-head中">5. 将 CSS放在 HEAD中</h3>
+<p>　　如果将 CSS放在其他地方比如 BODY中，则浏览器有可能还未下载和解析到 CSS就已经开始渲染页面了，这就导致页面由无 CSS状态跳转到 CSS状态，用户体验比较糟糕。除此之外，有些浏览器会在 CSS下载完成后才开始渲染页面，如果 CSS放在靠下的位置则会导致浏览器将渲染时间推迟。</p>
+
+<h3 id="6-异步请求-callback就是将一些行为样式提取出来慢慢的加载信息的内容">6. 异步请求 Callback（就是将一些行为样式提取出来，慢慢的加载信息的内容）</h3>
+<p>　　在某些页面中可能存在这样一种需求，需要使用 script标签来异步的请求数据。类似：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Javascript:
+      /*Callback 函数*/ 
+      function myCallback(info){ 
+      //do something here 
+      } 
+HTML:
+　　cb返回的内容 :
+      myCallback('Hello world!');
+</code></pre>
+</div>
+<p>像以上这种方式直接在页面上写 &lt;\script&gt;对页面的性能也是有影响的，即增加了页面首次加载的负担，推迟了 DOMLoaded和window.onload 事件的触发时机。如果时效性允许的话，可以考虑在 DOMLoaded事件触发的时候加载，或者使用 setTimeout方式来灵活的控制加载的时机。</p>
+
+<h3 id="7-减少不必要的-http跳转">7. 减少不必要的 HTTP跳转</h3>
+<p>　　对于以目录形式访问的 HTTP链接，很多人都会忽略链接最后是否带“/”，假如你的服务器对此是区别对待的话，那么你也需要注意，这其中很可能隐藏了 301跳转，增加了多余请求。具体参见下图，其中第一个链接是以无 “/”结尾的方式访问的，于是服务器有了一次跳转。</p>
+<h3 id="8-避免重复的资源请求">8. 避免重复的资源请求</h3>
+<p>　　这种情况主要是由于疏忽或页面由多个模块拼接而成，然后每个模块中请求了同样的资源时，会导致资源的重复请求</p>
+
+<h2 id="二代码级优化">二、代码级优化</h2>
+
+<h3 id="1-javascript">1. Javascript</h3>
+
+<ul>
+  <li>(1). DOM</li>
+</ul>
+
+<p>　　DOM操作应该是脚本中最耗性能的一类操作，例如增加、修改、删除 DOM元素或者对DOM集合进行操作。如果脚本中包含了大量的 DOM操作则需要注意以下几点：</p>
+<ul>
+  <li>a. HTML Collection（HTML收集器，返回的是一个数组内容信息）</li>
+</ul>
+
+<p>　　在脚本中 document.images、document.forms 、getElementsByTagName()返回的都是 HTMLCollection类型的集合，在平时使用的时候大多将它作为数组来使用，因为它有 length属性，也可以使用索引访问每一个元素。不过在访问性能上则比数组要差很多，原因是这个集合并不是一个静态的结果，它表示的仅仅是一个特定的查询，每次访问该集合时都会重新执行这个查询从而更新查询结果。所谓的 “访问集合” 包括读取集合的 length属性、访问集合中的元素。</p>
+
+<p>　　因此，当你需要遍历 HTML Collection的时候，尽量将它转为数组后再访问，以提高性能。即使不转换为数组，也请尽可能少的访问它，例如在遍历的时候可以将 length属性、成员保存到局部变量后再使用局部变量。</p>
+<ul>
+  <li>b. Reflow &amp; Repaint
+　
+除了上面一点之外，DOM操作还需要考虑浏览器的Reflow和Repaint，因为这些都是需要消耗资源的，具体的可以参加以下文章：</li>
+</ul>
+
+<p>如何减少浏览器的repaint和reflow?
+Understanding Internet Explorer Rendering Behaviour
+Notes on HTML Reflow</p>
+<ul>
+  <li>(2). 慎用 with</li>
+</ul>
+
+<p>　　with(obj){ p = 1}; 代码块的行为实际上是修改了代码块中的 执行环境 ，将obj放在了其作用域链的最前端，在with代码块中访问非局部变量是都是先从 obj上开始查找，如果没有再依次按作用域链向上查找，因此使用with相当于增加了作用域链长度。而每次查找作用域链都是要消耗时间的，过长的作用域链会导致查找性能下降。</p>
+
+<p>　　因此，除非你能肯定在 with代码中只访问 obj中的属性，否则慎用 with，替代的可以使用局部变量缓存需要访问的属性。</p>
+<ul>
+  <li>(3). 避免使用 eval和 Function</li>
+</ul>
+
+<p>　　每次eval或Function构造函数作用于字符串表示的源代码时，脚本引擎都需要将源代码转换成可执行代码。这是很消耗资源的操作 —— 通常比简单的函数调用慢 100倍以上。</p>
+
+<p>　　eval 函数效率特别低，由于事先无法知晓传给 eval 的字符串中的内容，eval在其上下文中解释要处理的代码，也就是说编译器无法优化上下文，因此只能有浏览器在运行时解释代码。这对性能影响很大。</p>
+
+<p>　　Function 构造函数比 eval略好，因为使用此代码不会影响周围代码 ;但其速度仍很慢。</p>
+
+<p>　　此外，使用 eval和 Function也不利于Javascript 压缩工具执行压缩。</p>
+<ul>
+  <li>(4). 减少作用域链查找（这方面设计到一些内容的相关问题）</li>
+</ul>
+
+<p>　　前文谈到了作用域链查找问题，这一点在循环中是尤其需要注意的问题。如果在循环中需要访问非本作用域下的变量时请在遍历之前用局部变量缓存该变量，并在遍历结束后再重写那个变量，这一点对全局变量尤其重要，因为全局变量处于作用域链的最顶端，访问时的查找次数是最多的。</p>
+
+<p>低效率的写法：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>// 全局变量 
+var globalVar = 1; 
+function myCallback(info){ 
+    for( var i = 100000; i--;){ 
+    //每次访问 globalVar 都需要查找到作用域链最顶端，本例中需要访问 100000 次 
+    globalVar += i; 
+    }
+} 
+</code></pre>
+</div>
+<p>更高效的写法：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>// 全局变量 
+var globalVar = 1; 
+function myCallback(info){ 
+//局部变量缓存全局变量 
+    var localVar = globalVar; 
+        for( var i = 100000; i--;){ 
+        //访问局部变量是最快的 
+        localVar += i; 
+        } 
+    //本例中只需要访问 2次全局变量,在函数中只需要将 globalVar中内容的值赋给localVar 中去
+    globalVar = localVar; 
+}
+</code></pre>
+</div>
+<p>　　此外，要减少作用域链查找还应该减少闭包的使用。</p>
+<ul>
+  <li>(5). 数据访问
+　　Javascript中的数据访问包括直接量 (字符串、正则表达式 )、变量、对象属性以及数组，其中对直接量和局部变量的访问是最快的，对对象属性以及数组的访问需要更大的开销。当出现以下情况时，建议将数据放入局部变量：
+　　a. 对任何对象属性的访问超过 1次
+　　b. 对任何数组成员的访问次数超过 1次
+　　另外，还应当尽可能的减少对对象以及数组深度查找。</li>
+  <li>(6). 字符串拼接
+　　在 Javascript中使用”+” 号来拼接字符串效率是比较低的，因为每次运行都会开辟新的内存并生成新的字符串变量，然后将拼接结果赋值给新变量。与之相比更为高效的做法是使用数组的 join方法，即将需要拼接的字符串放在数组中最后调用其 join方法得到结果。不过由于使用数组也有一定的开销，因此当需要拼接的字符串较多的时候可以考虑用此方法。</li>
+</ul>
+
+<p>　　关于 Javascript优化的更详细介绍请参考：
+Write Efficient Javascript(PPT)
+Efficient JavaScript</p>
+<h3 id="2-css选择符">2. CSS选择符</h3>
+<p>　　在大多数人的观念中，都觉得浏览器对 CSS选择符的解析式从左往右进行的，例如
+#toc A { color: #444; }
+　　这样一个选择符，如果是从右往左解析则效率会很高，因为第一个 ID选择基本上就把查找的范围限定了，但实际上浏览器对选择符的解析是从右往左进行的。如上面的选择符，浏览器必须遍历查找每一个 A标签的祖先节点，效率并不像之前想象的那样高。根据浏览器的这一行为特点，在写选择符的时候需要注意很多事项，有人已经一一列举了， 详情参考此处。</p>
+
+<h3 id="3-html">3. HTML</h3>
+<p>　　对 HTML本身的优化现如今也越来越多的受人关注了，详情可以参见这篇 总结性文章 。</p>
+
+<h3 id="4-image压缩">4. Image压缩</h3>
+<p>　　图片压缩是个技术活，不过现如今这方面的工具也非常多，压缩之后往往能带来不错的效果，具体的压缩原理以及方法在《 Even Faster Web Sites》第10 章有很详细的介绍，有兴趣的可以去看看。</p>
+<h3 id="总结">总结</h3>
+<p>　　本文从页面级以及代码级两个粒度对前端优化的各种方式做了一个总结，这些方法基本上都是前端开发人员在开发的过程中可以借鉴和实践的，除此之外，完整的前端优化还应该包括很多其他的途径，例如 CDN、 Gzip、多域名、无 Cookie服务器等等，由于对于开发人员的可操作性并不强大，在此也就不多叙述了，详细的可以参考 Yahoo和Google 的这些“金科玉律</p>
+
+
+  </section>
+</article>
+
+<section>
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2016/06/mobile/" data-toggle="tooltip" data-placement="top" title="移动端开发踩过的坑">上一篇：  <span>移动端开发踩过的坑</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2016/09/Angular1/" data-toggle="tooltip" data-placement="top" title="Angular初识（一）">下一篇：  <span>Angular初识（一）</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div class="ds-thread" data-thread-key="/2016/08/optimize/" data-title="前端性能优化" data-url="http://localhost:4000/2016/08/optimize/"></div>
+
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"415533780"};
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Weibo -->
+          <li class="navigation__item_social">
+            <a href="http://weibo.com/5975327672" title="@5975327672 的微博" target="_blank">
+              <i class='social fa fa-weibo fa-2x'></i>
+              <span class="label">Weibo</span>
+            </a>
+          </li>
+          
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/feibuli" title="@feibuli 的 Github" target="_blank">
+              <i class='social fa fa-github fa-2x'></i>
+              <span class="label">Github</span>
+            </a>
+          </li>
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+          <!-- Email -->
+          <li class="navigation__item_social">
+            <a href="mailto:415533780@qq.com" title="Contact me">
+              <i class='social fa fa-envelope fa-2x'></i>
+              <span class="label">Email</span>
+            </a>
+          </li>
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+          <p class="copyright text-muted">
+            Copyright &copy; Hliang 2016 - 2017 Theme by <a href="http://baixin.io/">leopardpan</a> & <a href="http://Hliang.xyz/">Hliang</a>|
+            <iframe
+                style="margin-left: 2px; margin-bottom:-5px;"
+                frameborder="0" scrolling="0" width="91px" height="20px"
+                src="https://ghbtns.com/github-btn.html?user=feibuli&repo=feibuli.github.io&type=star&count=true" >
+            </iframe>
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+    
+  </body>
+
+</html>
