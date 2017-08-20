@@ -5,9 +5,154 @@
     <description>我说晚了你就不学了吗？</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 23 May 2017 00:41:46 +0800</pubDate>
-    <lastBuildDate>Tue, 23 May 2017 00:41:46 +0800</lastBuildDate>
+    <pubDate>Mon, 21 Aug 2017 00:40:15 +0800</pubDate>
+    <lastBuildDate>Mon, 21 Aug 2017 00:40:15 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>生命周期与钩子函数</title>
+        <description>&lt;ul&gt;
+  &lt;li&gt;作者：原创        &lt;a href=&quot;https://www.zhihu.com/question/20790576/answer/32602154&quot;&gt;链接&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+
+&lt;p&gt;所谓“生命周期”，就是在类实例化的过程中，构造函数执行的不同阶段。&lt;/p&gt;
+
+&lt;p&gt;而“钩子”就是在某个阶段给你一个做某些处理的机会。&lt;/p&gt;
+
+&lt;p&gt;MVVM模式下，前端三大常用框架的生命周期与生命周期钩子有异曲同工之妙，为此特地放在一起进行比较。&lt;/p&gt;
+
+&lt;h3 id=&quot;react&quot;&gt;React&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;让我们返璞归真，从原始的前端开发讲起。上图是一个“可爱”的index.html页面和它的样式文件a.css，用文本编辑器写代码，无需编译，本地预览，确认OK，丢到服务器，等待用户访问。前端就是这么简单，好好玩啊，门槛好低啊，分分钟学会有木有！&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/2.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们访问页面，看到效果，再查看一下网络请求，200！不错，太™完美了！那么，研发完成。。。。了么？&lt;/p&gt;
+
+&lt;p&gt;等等，这还没完呢！对于大公司来说，那些变态的访问量和性能指标，将会让前端一点也不“好玩”。&lt;/p&gt;
+
+&lt;p&gt;看看那个a.css的请求吧，如果每次用户访问页面都要加载，是不是很影响性能，很浪费带宽啊，我们希望最好这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/3.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;利用304，让浏览器使用本地缓存。但，这样也就够了吗？不成！304叫协商缓存，这玩意还是要和服务器通信一次，我们的优化级别是变态级，所以必须彻底灭掉这个请求，变成这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/4.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;强制浏览器使用本地缓存（cache-control/expires），不要和服务器通信。好了，请求方面的优化已经达到变态级别，那问题来了：你都不让浏览器发资源请求了，这缓存咋更新？&lt;/p&gt;
+
+&lt;p&gt;很好，相信有人想到了办法：&lt;strong&gt;通过更新页面中引用的资源路径，让浏览器主动放弃缓存，加载新资源&lt;/strong&gt; 。好像这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/5.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;下次上线，把链接地址改成新的版本，就更新资源了不是。OK，问题解决了么？！当然没有！大公司的变态又来了，思考这种情况：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/6.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;页面引用了3个css，而某次上线只改了其中的a.css，如果所有链接都更新版本，就会导致b.css，c.css的缓存也失效，那岂不是又有浪费了？！&lt;/p&gt;
+
+&lt;p&gt;重新开启变态模式，我们不难发现，要解决这种问题，必须让url的修改与文件内容关联，也就是说，只有文件内容变化，才会导致相应url的变更，从而实现文件级别的精确缓存控制。&lt;/p&gt;
+
+&lt;p&gt;什么东西与文件内容相关呢？我们会很自然的联想到利用 &lt;a href=&quot;http://baike.baidu.com/view/10961371.htm&quot;&gt;数据摘要要算法&lt;/a&gt; 对文件求摘要信息，摘要信息与文件内容一一对应，就有了一种可以精确到单个文件粒度的缓存控制依据了。好了，我们把url改成带摘要信息的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/7.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这回再有文件修改，就只更新那个文件对应的url了，想到这里貌似很完美了。你觉得这就够了么？大公司告诉你：图样图森破！&lt;/p&gt;
+
+&lt;p&gt;唉~~~~，让我喘口气&lt;/p&gt;
+
+&lt;p&gt;现代互联网企业，为了进一步提升网站性能，会把静态资源和动态网页分集群部署，静态资源会被部署到CDN节点上，网页中引用的资源也会变成对应的部署路径：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/8.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;好了，当我要更新静态资源的时候，同时也会更新html中的引用吧，就好像这样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/9.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这次发布，同时改了页面结构和样式，也更新了静态资源对应的url地址，现在要发布代码上线，亲爱的前端研发同学，你来告诉我，咱们是先上线页面，还是先上线静态资源？&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;先部署页面，再部署资源&lt;/strong&gt;：在二者部署的时间间隔内，如果有用户访问页面，就会在新的页面结构中加载旧的资源，并且把这个旧版本的资源当做新版本缓存起来，其结果就是：用户访问到了一个样式错乱的页面，除非手动刷新，否则在资源缓存过期之前，页面会一直执行错误。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;先部署资源，再部署页面&lt;/strong&gt;：在部署时间间隔之内，有旧版本资源本地缓存的用户访问网站，由于请求的页面是旧版本的，资源引用没有改变，浏览器将直接使用本地缓存，这种情况下页面展现正常；但没有本地缓存或者缓存过期的用户访问网站，就会出现旧版本页面加载新版本资源的情况，导致页面执行错误，但当页面完成部署，这部分用户再次访问页面又会恢复正常了。
+好的，上面一坨分析想说的就是：先部署谁都不成！都会导致部署过程中发生页面错乱的问题。所以，访问量不大的项目，可以让研发同学苦逼一把，等到半夜偷偷上线，先上静态资源，再部署页面，看起来问题少一些。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;但是，大公司超变态，没有这样的“绝对低峰期”，只有“相对低峰期”。So，为了稳定的服务，还得继续追求极致啊！&lt;/p&gt;
+
+&lt;p&gt;这个奇葩问题，起源于资源的 &lt;strong&gt;覆盖式发布&lt;/strong&gt;，用 待发布资源 覆盖 已发布资源，就有这种问题。解决它也好办，就是实现 &lt;strong&gt;非覆盖式发布&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/10.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;看上图，用文件的摘要信息来对资源文件进行重命名，把摘要信息放到资源文件发布路径中，这样，内容有修改的资源就变成了一个新的文件发布到线上，不会覆盖已有的资源文件。上线过程中，先全量部署静态资源，再灰度部署页面，整个问题就比较完美的解决了。&lt;/p&gt;
+
+&lt;p&gt;所以，大公司的静态资源优化方案，基本上要实现这么几个东西：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;配置超长时间的本地缓存 —— 节省带宽，提高性能
+采用内容摘要作为缓存更新依据 —— 精确的缓存控制
+静态资源CDN部署 —— 优化网络请求
+更资源发布路径实现非覆盖式发布 —— 平滑升级&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;全套做下来，就是相对比较完整的静态资源缓存控制方案了，而且，还要注意的是，静态资源的缓存控制要求在&lt;strong&gt;前端所有静态资源加载的位置都要做这样的处理&lt;/strong&gt;。是的，所有！什么js、css自不必说，还要包括js、css文件中引用的资源路径，由于涉及到摘要信息，引用资源的摘要信息也会引起引用文件本身的内容改变，从而形成级联的摘要变化，大概示意图就是：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/11.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;好了，目前我们快速的学习了一下前端工程中关于静态资源缓存要面临的优化和部署问题，新的问题又来了：这™让工程师怎么写码啊！！！&lt;/p&gt;
+
+&lt;p&gt;要解释优化与工程的结合处理思路，又会扯出一堆有关模块化开发、资源加载、请求合并、前端框架等等的工程问题，以上只是开了个头，解决方案才是精髓，但要说的太多太多，有空再慢慢展开吧。或者大家可以去我的blog看其中的一些拆解：&lt;a href=&quot;https://github.com/fouber/blog&quot;&gt;fouber/blog · GitHub&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;总之，前端性能优化绝逼是一个工程问题！&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;以上不是我YY的，可以观察 百度 或者 facebook 的页面以及静态资源源代码，查看它们的资源引用路径处理，以及网络请中静态资源的缓存控制部分。再次赞叹facebook的前端工程建设水平，跪舔了。&lt;/p&gt;
+
+&lt;p&gt;建议前端工程师多多关注前端工程领域，也许有人会觉得自己的产品很小，不用这么变态，但很有可能说不定某天你就需要做出这样的改变了。而且，如果我们能把事情做得更极致，为什么不去做呢？&lt;/p&gt;
+
+&lt;p&gt;另外，也不要觉得这些是运维或者后端工程师要解决的问题。如果由其他角色来解决，大家总是把自己不关心的问题丢给别人，那么前端工程师的开发过程将受到极大的限制，这种情况甚至在某些大公司都不少见！&lt;/p&gt;
+
+&lt;p&gt;妈妈，我再也不玩前端了。。。。5555&lt;/p&gt;
+
+&lt;h3 id=&quot;更新&quot;&gt;更新&lt;/h3&gt;
+
+&lt;p&gt;========================[ 10.29更新 ]========================&lt;/p&gt;
+
+&lt;p&gt;这里更新一下：&lt;/p&gt;
+
+&lt;p&gt;在评论中， @陈钢@fleuria @林翔 提到了rails，刚刚去看了一下，确实是完成了以上所说的优化细节，对整个静态资源的管理上的思考于本答案描述的一致。很遗憾我直到今天（2014-10-29）才了解到rails中的assets pipeline。这里向以上3位同学道歉，原谅我的无知。&lt;/p&gt;
+
+&lt;p&gt;不过整篇回答没有讲解到具体的解决方案实现思路，只是介绍了前端在工程化方向的思考，答案本身是可用的，了解rails的人也可以把此答案当做是对rails中assets pipeline设计原理的分析。&lt;/p&gt;
+
+&lt;p&gt;rails通过把静态资源变成erb模板文件，然后加入&amp;lt;%= asset_path ‘image.png’ %&amp;gt;，上线前预编译完成处理，不得不承认，fis的实现思路跟这个几乎完全一样，但我们当初确实不知道有rails的这套方案存在。&lt;/p&gt;
+
+&lt;p&gt;相关资料：英文版：&lt;a href=&quot;http://guides.rubyonrails.org/asset_pipeline.html&quot;&gt;The Asset Pipeline&lt;/a&gt;，中文版：&lt;a href=&quot;http://guides.ruby-china.org/asset_pipeline.html&quot;&gt;Asset Pipeline&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;========================[ 10.31更新 ]========================&lt;/p&gt;
+
+&lt;p&gt;用 &lt;a href=&quot;[http://fis.baidu.com/]&quot;&gt;F.I.S&lt;/a&gt; 包装了一个小工具，完整实现整个回答所说的最佳部署方案，并提供了源码对照，可以感受一下项目源码和部署代码的对照。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;源码项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project&quot;&gt;fouber/static-resource-digest-project · GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;部署项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project-release&quot;&gt;fouber/static-resource-digest-project-release · GitHub&lt;/a&gt;
+部署项目可以理解为线上发布后的结果，可以在部署项目里查看所有资源引用的md5化处理。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这个示例也可以用于和assets pipeline做比较。fis没有assets的目录规范约束，而且可以以独立工具的方式组合各种前端开发语言（coffee、less、sass/scss、stylus、markdown、jade、ejs、handlebars等等你能想到的），并与其他后端开发语言结合。&lt;/p&gt;
+
+&lt;p&gt;assets pipeline的设计思想值得独立成工具用于前端工程，fis就当做这样的一个选择吧。&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 17 Aug 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/08/life/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/08/life/</guid>
+        
+        <category>个人体会</category>
+        
+        
+      </item>
     
       <item>
         <title>非覆盖式开发--前段工程化</title>
@@ -1373,171 +1518,6 @@ display:-webkit-box;
         <guid isPermaLink="true">http://localhost:4000/2016/06/mobile/</guid>
         
         <category>前端分享</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>npm,browser-sync,gulp使用</title>
-        <description>&lt;h3 id=&quot;npm&quot;&gt;npm&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;官网[https://www.npmjs.com]&lt;/li&gt;
-  &lt;li&gt;node package manager&lt;/li&gt;
-  &lt;li&gt;命令:
-    &lt;ul&gt;
-      &lt;li&gt;初始化： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm init&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;安装指定包： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install jquery --save&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;删除指定包： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm remove jquery --save&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;下载安装package.json中dependencies属性对的文件:&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install --production&lt;/code&gt;&lt;/li&gt;
-      &lt;li&gt;换源：
-        &lt;ul&gt;
-          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm config set registry https://registry.npm.taobao.org&lt;/code&gt;&lt;/li&gt;
-          &lt;li&gt;或者使用cnpm： &lt;code class=&quot;highlighter-rouge&quot;&gt;npm install -g cnpm --registry=https://registry.npm.taobao.org&lt;/code&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;browser-sync&quot;&gt;browser-sync&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;更改代码之后自动刷新浏览器&lt;/li&gt;
-  &lt;li&gt;需要使用npm进行全局安装:&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install browser-sync -g&lt;/code&gt;,-g表示安装到全局&lt;/li&gt;
-  &lt;li&gt;使用:&lt;code class=&quot;highlighter-rouge&quot;&gt;browser-sync start --server --files &quot;./index.html,app.css,./css/*.css,*.*&quot; &lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;–files参数指定要监视的文件，后面跟要监视的文件的文件路径以逗号分隔。&lt;/li&gt;
-  &lt;li&gt;cmd数据&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;------------------------------------
-       Local: http://localhost:3000		//访问地址
-    External: http://172.20.10.3:3000
-------------------------------------
-          UI: http://localhost:3001		//后台地址
- UI External: http://172.20.10.3:3001
-------------------------------------
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;gulp&quot;&gt;gulp&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.gulpjs.com&quot;&gt;官网&lt;/a&gt;
-  &lt;a href=&quot;http://www.gulpjs.com.cn&quot;&gt;中文网&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;前端自动化构建工具
-js压缩,var x,xname，混淆
-合并.
-css压缩
-html压压缩&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;grunt ,webpack…&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;核心就5个方法&quot;&gt;核心就5个方法&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;task,gulp中是一个个任务的形式来实现功能。
-    &lt;ul&gt;
-      &lt;li&gt;task(‘任务名’,function(){
-…..
-});&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;src
-    &lt;ul&gt;
-      &lt;li&gt;src(‘./*.js’)&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;dest(‘./minjs/’)// 指定处理后的文件的输出路径.&lt;/li&gt;
-  &lt;li&gt;watch(‘./*.js’,[‘任务名1’,’任务名2’]);&lt;/li&gt;
-  &lt;li&gt;run(‘任务名’);//执行指定的任务.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;gulp的安装&quot;&gt;gulp的安装&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;使用npm 进行安装&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install gulp-cli -g&lt;/code&gt;;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;gulp-使用&quot;&gt;gulp 使用&lt;/h3&gt;
-
-&lt;h4 id=&quot;使用时还需要在项目中通过npm非全局安装gulp&quot;&gt;使用时还需要在项目中通过npm非全局安装gulp&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;npm install gulp --save-dev&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;还需要在当前项目根目录添加一个gulpfilejs文件来写具体的任务代码&quot;&gt;还需要在当前项目根目录添加一个gulpfile.js文件来写具体的任务代码.&lt;/h4&gt;
-
-&lt;h3 id=&quot;gulp的一些插件&quot;&gt;gulp的一些插件&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;也是使用npm安装&lt;/li&gt;
-  &lt;li&gt;对js代码进行压缩 gulp-uglify&lt;/li&gt;
-  &lt;li&gt;对代码进行合并 gulp-concat&lt;/li&gt;
-  &lt;li&gt;对css进行压缩 gulp-cssnano&lt;/li&gt;
-  &lt;li&gt;对html进行压缩 gulp-htmlmin&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 得到gulp对象
-var gulp = require('gulp');
-
-
-// 引入gulp-uglify插件，只是用来压缩，混淆
-var uglify = require('gulp-uglify');
-
-// 合并,即能合并js,也能合并css
-var concat = require('gulp-concat');
-
-
-// 用来对css进行压缩操作的插件
-var cssnano = require('gulp-cssnano');
-
-// 引用gulp-htmlmin对html进行压缩
-var htmlmin = require('gulp-htmlmin');
-
-// 1.新建任务
-gulp.task('script',function(){
-  // 这里写任务具体需要做的事情.
-  // 2.匹配到app.js文件,如果使用多个规则，需要以数组的形式来书写第一个参数，数组中的每一个元素都是一个规则。
-  gulp.src(['./app.js','./signIn.js'])
-  .pipe(concat('all.js'))
-  // 压缩，混淆
-  .pipe(uglify())
-  .pipe(gulp.dest('./dist'))
-  // 输出到指定目录
-});
-
-// 新建对css进行处理的任务.
-gulp.task('style',function(){
-   // 匹配css文件
-   gulp.src(['./style.css','./signIn.css'])
-   .pipe(concat('all.css')) // 需要指定一个名字，作为压缩后文件的文件名
-   .pipe(cssnano())
-   .pipe(gulp.dest('./dist'))
-});
-
-// 压缩html任务
-gulp.task('html',function(){
-  // 匹配html文件
-  gulp.src('./index.html')
-  .pipe(htmlmin({collapseWhitespace:true}))
-  .pipe(gulp.dest('./dist/'));
-});
-
-// 单独创建任务来监视文件变化
-gulp.task('watch',function(){
-  // 监视文件变化，并调用指定任务处理代码
-// 使用多个规则用数组,第二个参数，是想要执行的任务
- gulp.watch(['./app.js','./signIn.js'],['script']);
-})
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Fri, 20 May 2016 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2016/05/npm/</link>
-        <guid isPermaLink="true">http://localhost:4000/2016/05/npm/</guid>
-        
-        <category>前端工具</category>
         
         
       </item>
