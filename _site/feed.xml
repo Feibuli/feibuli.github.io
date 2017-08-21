@@ -5,17 +5,13 @@
     <description>我说晚了你就不学了吗？</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 21 Aug 2017 00:40:15 +0800</pubDate>
-    <lastBuildDate>Mon, 21 Aug 2017 00:40:15 +0800</lastBuildDate>
+    <pubDate>Tue, 22 Aug 2017 00:38:39 +0800</pubDate>
+    <lastBuildDate>Tue, 22 Aug 2017 00:38:39 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
     
       <item>
-        <title>生命周期与钩子函数</title>
-        <description>&lt;ul&gt;
-  &lt;li&gt;作者：原创        &lt;a href=&quot;https://www.zhihu.com/question/20790576/answer/32602154&quot;&gt;链接&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+        <title>常用框架生命周期与钩子函数</title>
+        <description>&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
 
 &lt;p&gt;所谓“生命周期”，就是在类实例化的过程中，构造函数执行的不同阶段。&lt;/p&gt;
 
@@ -25,131 +21,96 @@
 
 &lt;h3 id=&quot;react&quot;&gt;React&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;让我们返璞归真，从原始的前端开发讲起。上图是一个“可爱”的index.html页面和它的样式文件a.css，用文本编辑器写代码，无需编译，本地预览，确认OK，丢到服务器，等待用户访问。前端就是这么简单，好好玩啊，门槛好低啊，分分钟学会有木有！&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/2.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后我们访问页面，看到效果，再查看一下网络请求，200！不错，太™完美了！那么，研发完成。。。。了么？&lt;/p&gt;
-
-&lt;p&gt;等等，这还没完呢！对于大公司来说，那些变态的访问量和性能指标，将会让前端一点也不“好玩”。&lt;/p&gt;
-
-&lt;p&gt;看看那个a.css的请求吧，如果每次用户访问页面都要加载，是不是很影响性能，很浪费带宽啊，我们希望最好这样：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/3.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;利用304，让浏览器使用本地缓存。但，这样也就够了吗？不成！304叫协商缓存，这玩意还是要和服务器通信一次，我们的优化级别是变态级，所以必须彻底灭掉这个请求，变成这样：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/4.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;强制浏览器使用本地缓存（cache-control/expires），不要和服务器通信。好了，请求方面的优化已经达到变态级别，那问题来了：你都不让浏览器发资源请求了，这缓存咋更新？&lt;/p&gt;
-
-&lt;p&gt;很好，相信有人想到了办法：&lt;strong&gt;通过更新页面中引用的资源路径，让浏览器主动放弃缓存，加载新资源&lt;/strong&gt; 。好像这样：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/5.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;下次上线，把链接地址改成新的版本，就更新资源了不是。OK，问题解决了么？！当然没有！大公司的变态又来了，思考这种情况：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/6.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;页面引用了3个css，而某次上线只改了其中的a.css，如果所有链接都更新版本，就会导致b.css，c.css的缓存也失效，那岂不是又有浪费了？！&lt;/p&gt;
-
-&lt;p&gt;重新开启变态模式，我们不难发现，要解决这种问题，必须让url的修改与文件内容关联，也就是说，只有文件内容变化，才会导致相应url的变更，从而实现文件级别的精确缓存控制。&lt;/p&gt;
-
-&lt;p&gt;什么东西与文件内容相关呢？我们会很自然的联想到利用 &lt;a href=&quot;http://baike.baidu.com/view/10961371.htm&quot;&gt;数据摘要要算法&lt;/a&gt; 对文件求摘要信息，摘要信息与文件内容一一对应，就有了一种可以精确到单个文件粒度的缓存控制依据了。好了，我们把url改成带摘要信息的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/7.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这回再有文件修改，就只更新那个文件对应的url了，想到这里貌似很完美了。你觉得这就够了么？大公司告诉你：图样图森破！&lt;/p&gt;
-
-&lt;p&gt;唉~~~~，让我喘口气&lt;/p&gt;
-
-&lt;p&gt;现代互联网企业，为了进一步提升网站性能，会把静态资源和动态网页分集群部署，静态资源会被部署到CDN节点上，网页中引用的资源也会变成对应的部署路径：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/8.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;好了，当我要更新静态资源的时候，同时也会更新html中的引用吧，就好像这样：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/9.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这次发布，同时改了页面结构和样式，也更新了静态资源对应的url地址，现在要发布代码上线，亲爱的前端研发同学，你来告诉我，咱们是先上线页面，还是先上线静态资源？&lt;/p&gt;
+&lt;p&gt;React组件的生命周期分成三个状态：&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;先部署页面，再部署资源&lt;/strong&gt;：在二者部署的时间间隔内，如果有用户访问页面，就会在新的页面结构中加载旧的资源，并且把这个旧版本的资源当做新版本缓存起来，其结果就是：用户访问到了一个样式错乱的页面，除非手动刷新，否则在资源缓存过期之前，页面会一直执行错误。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;先部署资源，再部署页面&lt;/strong&gt;：在部署时间间隔之内，有旧版本资源本地缓存的用户访问网站，由于请求的页面是旧版本的，资源引用没有改变，浏览器将直接使用本地缓存，这种情况下页面展现正常；但没有本地缓存或者缓存过期的用户访问网站，就会出现旧版本页面加载新版本资源的情况，导致页面执行错误，但当页面完成部署，这部分用户再次访问页面又会恢复正常了。
-好的，上面一坨分析想说的就是：先部署谁都不成！都会导致部署过程中发生页面错乱的问题。所以，访问量不大的项目，可以让研发同学苦逼一把，等到半夜偷偷上线，先上静态资源，再部署页面，看起来问题少一些。&lt;/li&gt;
+  &lt;li&gt;Mounting：已插入真实 DOM&lt;/li&gt;
+  &lt;li&gt;Updating：正在被重新渲染&lt;/li&gt;
+  &lt;li&gt;Unmounting：已移出真实 DOM&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;但是，大公司超变态，没有这样的“绝对低峰期”，只有“相对低峰期”。So，为了稳定的服务，还得继续追求极致啊！&lt;/p&gt;
-
-&lt;p&gt;这个奇葩问题，起源于资源的 &lt;strong&gt;覆盖式发布&lt;/strong&gt;，用 待发布资源 覆盖 已发布资源，就有这种问题。解决它也好办，就是实现 &lt;strong&gt;非覆盖式发布&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/10.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;看上图，用文件的摘要信息来对资源文件进行重命名，把摘要信息放到资源文件发布路径中，这样，内容有修改的资源就变成了一个新的文件发布到线上，不会覆盖已有的资源文件。上线过程中，先全量部署静态资源，再灰度部署页面，整个问题就比较完美的解决了。&lt;/p&gt;
-
-&lt;p&gt;所以，大公司的静态资源优化方案，基本上要实现这么几个东西：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;配置超长时间的本地缓存 —— 节省带宽，提高性能
-采用内容摘要作为缓存更新依据 —— 精确的缓存控制
-静态资源CDN部署 —— 优化网络请求
-更资源发布路径实现非覆盖式发布 —— 平滑升级&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;全套做下来，就是相对比较完整的静态资源缓存控制方案了，而且，还要注意的是，静态资源的缓存控制要求在&lt;strong&gt;前端所有静态资源加载的位置都要做这样的处理&lt;/strong&gt;。是的，所有！什么js、css自不必说，还要包括js、css文件中引用的资源路径，由于涉及到摘要信息，引用资源的摘要信息也会引起引用文件本身的内容改变，从而形成级联的摘要变化，大概示意图就是：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/posts/bigcompany/11.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;好了，目前我们快速的学习了一下前端工程中关于静态资源缓存要面临的优化和部署问题，新的问题又来了：这™让工程师怎么写码啊！！！&lt;/p&gt;
-
-&lt;p&gt;要解释优化与工程的结合处理思路，又会扯出一堆有关模块化开发、资源加载、请求合并、前端框架等等的工程问题，以上只是开了个头，解决方案才是精髓，但要说的太多太多，有空再慢慢展开吧。或者大家可以去我的blog看其中的一些拆解：&lt;a href=&quot;https://github.com/fouber/blog&quot;&gt;fouber/blog · GitHub&lt;/a&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;总之，前端性能优化绝逼是一个工程问题！&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;以上不是我YY的，可以观察 百度 或者 facebook 的页面以及静态资源源代码，查看它们的资源引用路径处理，以及网络请中静态资源的缓存控制部分。再次赞叹facebook的前端工程建设水平，跪舔了。&lt;/p&gt;
-
-&lt;p&gt;建议前端工程师多多关注前端工程领域，也许有人会觉得自己的产品很小，不用这么变态，但很有可能说不定某天你就需要做出这样的改变了。而且，如果我们能把事情做得更极致，为什么不去做呢？&lt;/p&gt;
-
-&lt;p&gt;另外，也不要觉得这些是运维或者后端工程师要解决的问题。如果由其他角色来解决，大家总是把自己不关心的问题丢给别人，那么前端工程师的开发过程将受到极大的限制，这种情况甚至在某些大公司都不少见！&lt;/p&gt;
-
-&lt;p&gt;妈妈，我再也不玩前端了。。。。5555&lt;/p&gt;
-
-&lt;h3 id=&quot;更新&quot;&gt;更新&lt;/h3&gt;
-
-&lt;p&gt;========================[ 10.29更新 ]========================&lt;/p&gt;
-
-&lt;p&gt;这里更新一下：&lt;/p&gt;
-
-&lt;p&gt;在评论中， @陈钢@fleuria @林翔 提到了rails，刚刚去看了一下，确实是完成了以上所说的优化细节，对整个静态资源的管理上的思考于本答案描述的一致。很遗憾我直到今天（2014-10-29）才了解到rails中的assets pipeline。这里向以上3位同学道歉，原谅我的无知。&lt;/p&gt;
-
-&lt;p&gt;不过整篇回答没有讲解到具体的解决方案实现思路，只是介绍了前端在工程化方向的思考，答案本身是可用的，了解rails的人也可以把此答案当做是对rails中assets pipeline设计原理的分析。&lt;/p&gt;
-
-&lt;p&gt;rails通过把静态资源变成erb模板文件，然后加入&amp;lt;%= asset_path ‘image.png’ %&amp;gt;，上线前预编译完成处理，不得不承认，fis的实现思路跟这个几乎完全一样，但我们当初确实不知道有rails的这套方案存在。&lt;/p&gt;
-
-&lt;p&gt;相关资料：英文版：&lt;a href=&quot;http://guides.rubyonrails.org/asset_pipeline.html&quot;&gt;The Asset Pipeline&lt;/a&gt;，中文版：&lt;a href=&quot;http://guides.ruby-china.org/asset_pipeline.html&quot;&gt;Asset Pipeline&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;========================[ 10.31更新 ]========================&lt;/p&gt;
-
-&lt;p&gt;用 &lt;a href=&quot;[http://fis.baidu.com/]&quot;&gt;F.I.S&lt;/a&gt; 包装了一个小工具，完整实现整个回答所说的最佳部署方案，并提供了源码对照，可以感受一下项目源码和部署代码的对照。&lt;/p&gt;
+&lt;p&gt;React 为每个状态都提供了两种处理函数，will函数在进入状态之前调用，did 函数在进入状态之后调用，三种状态共计五种处理函数。&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;源码项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project&quot;&gt;fouber/static-resource-digest-project · GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;部署项目：&lt;a href=&quot;https://github.com/fouber/static-resource-digest-project-release&quot;&gt;fouber/static-resource-digest-project-release · GitHub&lt;/a&gt;
-部署项目可以理解为线上发布后的结果，可以在部署项目里查看所有资源引用的md5化处理。&lt;/li&gt;
+  &lt;li&gt;componentWillMount()&lt;/li&gt;
+  &lt;li&gt;componentDidMount()&lt;/li&gt;
+  &lt;li&gt;componentWillUpdate(object nextProps, object nextState)&lt;/li&gt;
+  &lt;li&gt;componentDidUpdate(object prevProps, object prevState)&lt;/li&gt;
+  &lt;li&gt;componentWillUnmount()&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;这个示例也可以用于和assets pipeline做比较。fis没有assets的目录规范约束，而且可以以独立工具的方式组合各种前端开发语言（coffee、less、sass/scss、stylus、markdown、jade、ejs、handlebars等等你能想到的），并与其他后端开发语言结合。&lt;/p&gt;
+&lt;p&gt;此外，React 还提供两种特殊状态的处理函数。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用&lt;/li&gt;
+  &lt;li&gt;shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;assets pipeline的设计思想值得独立成工具用于前端工程，fis就当做这样的一个选择吧。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/posts/life/react.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;vue&quot;&gt;Vue&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/life/vue1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/posts/life/vue2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vue提供的可以注册的钩子都在上图片的红色框标注。 他们是：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;beforeCreate&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在实例初始化之后，数据观测(data observer) 和 event/watcher 事件配置之前被调用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;created&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：数据观测(data observer)，属性和方法的运算， watch/event 事件回调。然而，挂载阶段还没开始，$el 属性目前不可见。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;beforeMount&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在挂载开始之前被调用：相关的 render 函数首次被调用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;mounted&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。如果 root 实例挂载了一个文档内元素，当 mounted 被调用时 vm.$el 也在文档内。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;beforeUpdate&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;数据更新时调用，发生在虚拟 DOM 重新渲染和打补丁之前。 你可以在这个钩子中进一步地更改状态，这不会触发附加的重渲染过程。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;updated&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;由于数据更改导致的虚拟 DOM 重新渲染和打补丁，在这之后会调用该钩子。&lt;/p&gt;
+
+&lt;p&gt;当这个钩子被调用时，组件 DOM 已经更新，所以你现在可以执行依赖于 DOM 的操作。然而在大多数情况下，你应该避免在此期间更改状态，因为这可能会导致更新无限循环。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;该钩子在服务器端渲染期间不被调用。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;beforeDestroy&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;实例销毁之前调用。在这一步，实例仍然完全可用。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;destroyed&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Vue 实例销毁后调用。调用后，Vue 实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。 该钩子在服务器端渲染期间不被调用。&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 17 Aug 2017 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2017/08/life/</link>
         <guid isPermaLink="true">http://localhost:4000/2017/08/life/</guid>
         
-        <category>个人体会</category>
+        <category>前端分享</category>
         
         
       </item>
